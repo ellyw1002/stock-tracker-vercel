@@ -25,10 +25,11 @@ export default async function handler(req, res) {
     const { term } = req.query;
     console.log('start: ', new Date());
     const browser = await puppeteer.launch({ headless: true });
+    console.log('browser')
     const page = await browser.newPage();
-
+    console.log('page')
     await page.setViewport({ width: 1440, height: 1080 });
-
+    console.log('viewport')
     for (const { id, url } of pages) {
       await page.goto(url);
       await timeout(1000);
