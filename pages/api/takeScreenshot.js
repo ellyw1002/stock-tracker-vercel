@@ -1,4 +1,4 @@
-const puppeteer = require("puppeteer");
+const { chromium } = require("playwright");
 import initMiddleware from '../../lib/init-middleware';
 import validateMiddleware from '../../lib/validate-middleware';
 import { query, validationResult } from 'express-validator';
@@ -24,11 +24,11 @@ export default async function handler(req, res) {
   try {
     const { term } = req.query;
     console.log('start: ', new Date());
-    const browser = await puppeteer.launch({ headless: true });
+    let browser = await chromium.launch();
     console.log('browser')
-    const page = await browser.newPage();
+    let page = await browser.newPage();
     console.log('page')
-    await page.setViewport({ width: 1440, height: 1080 });
+    await page.setViewportSize({ width: 1280, height: 1080 });
     console.log('viewport')
     for (const { id, url } of pages) {
       await page.goto(url);

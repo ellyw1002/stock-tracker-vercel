@@ -17,7 +17,7 @@
     "cross-env": "^7.0.3",
     "express-validator": "^6.14.2",
     "next": "12.3.1",
-    "puppeteer": "^19.1.2",
+    "playwright": "^1.27.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
