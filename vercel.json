@@ -6,7 +6,7 @@
     },
     "pages/api/*.js": {
       "memory": 128,
-      "maxDuration": 30
+      "maxDuration": 10
     }
   }
 }
