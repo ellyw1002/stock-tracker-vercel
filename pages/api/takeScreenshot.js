@@ -34,6 +34,7 @@ export default async function handler(req, res) {
       await timeout(1000);
       await page.screenshot({ path: `screenshots/test${id}.jpeg` });
       console.log(`✅ ${new Date()} - (${url})`);
+      if (id == 1) break;
     }
     // await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
     // await page.screenshot({ path: `test.jpeg` });
