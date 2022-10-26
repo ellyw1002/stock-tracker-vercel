@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "pages/api/takeScreenshot.js": {
+      "memory": 512,
+      "maxDuration": 10
+    },
+    "pages/api/*.js": {
+      "memory": 128,
+      "maxDuration": 30
+    }
+  }
+}

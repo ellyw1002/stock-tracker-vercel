@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "url": "http://ca.finance.yahoo.com/quote/TSLA"
+  },
+  {
+    "id": 2,
+    "url": "http://ca.finance.yahoo.com/quote/AMD"
+  },
+  {
+    "id": 3,
+    "url": "http://ca.finance.yahoo.com/quote/AAPL"
+  },
+  {
+    "id": 4,
+    "url": "http://ca.finance.yahoo.com/quote/MSFT"
+  },
+  {
+    "id": 5,
+    "url": "http://ca.finance.yahoo.com/quote/GOOG"
+  },
+  {
+    "id": 6,
+    "url": "http://ca.finance.yahoo.com/quote/AMC"
+  },
+  {
+    "id": 7,
+    "url": "http://ca.finance.yahoo.com/quote/GME"
+  },
+  {
+    "id": 8,
+    "url": "http://ca.finance.yahoo.com/quote/NFLX"
+  },
+  {
+    "id": 9,
+    "url": "http://ca.finance.yahoo.com/quote/ROKU"
+  },
+  {
+    "id": 10,
+    "url": "http://ca.finance.yahoo.com/quote/DIS"
+  }
+]
