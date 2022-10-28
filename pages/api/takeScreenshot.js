@@ -72,6 +72,10 @@ export default async function handler(req, res) {
     return res.status(200).json('Screenshots taken successfully');
 
   } catch (err) {
-    return res.status(422).json({ serverStatusText: 'fail', serverStatusMessage: err });
+    console.log(err);
+    res.json({
+      status: 'error',
+      data: err.message || 'Something went wrong'
+    })
   }
 }

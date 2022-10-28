@@ -31,8 +31,5 @@
     "eslint": "8.26.0",
     "eslint-config-next": "12.3.1",
     "puppeteer": "^19.1.2"
-  },
-  "engines": {
-    "node": "^14"
   }
 }
