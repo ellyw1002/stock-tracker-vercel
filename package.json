@@ -14,11 +14,11 @@
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.4.3",
     "bootstrap": "^5.2.2",
-    "chrome-aws-lambda": "^10.1.0",
     "cross-env": "^7.0.3",
     "express-validator": "^6.14.2",
     "next": "12.3.1",
-    "puppeteer-core": "^10.4.0",
+    "chrome-aws-lambda": "^2.0.0",
+    "puppeteer-core": "^2.0.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
     "react-dom": "^18.2.0",
@@ -31,6 +31,6 @@
   "devDependencies": {
     "eslint": "8.26.0",
     "eslint-config-next": "12.3.1",
-    "puppeteer": "^19.2.0"
+    "puppeteer": "^2.0.0"
   }
 }
