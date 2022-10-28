@@ -1,4 +1,4 @@
-const { chromium } = require("playwright");
+import chromium from 'chrome-aws-lambda';
 import initMiddleware from '../../lib/init-middleware';
 import validateMiddleware from '../../lib/validate-middleware';
 import { query, validationResult } from 'express-validator';
@@ -14,22 +14,50 @@ const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
+async function getBrowserInstance() {
+  const executablePath = await chromium.executablePath;
+
+  if (!executablePath) {
+    // running locally
+    const puppeteer = require('puppeteer');
+    return puppeteer.launch({
+      args: chromium.args,
+      headless: true,
+      defaultViewport: {
+        width: 1280,
+        height: 800
+      },
+      ignoreHTTPSErrors: true
+    });
+  }
+  console.log('in prod screenshot');
+  return chromium.puppeteer.launch({
+    args: chromium.args,
+    defaultViewport: {
+      width: 1280,
+      height: 1080
+    },
+    executablePath,
+    headless: chromium.headless,
+    ignoreHTTPSErrors: true,
+    ignoreDefaultArgs: ['--disable-extensions']
+  });
+}
+
 export default async function handler(req, res) {
   await validateBody(req, res);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
-
+  let browser = null;
   try {
     const { term } = req.query;
     console.log('start: ', new Date());
-    let browser = await chromium.launch();
-    console.log('browser')
+    browser = await getBrowserInstance();
+    console.log('browser', new Date());
     let page = await browser.newPage();
-    console.log('page')
-    await page.setViewportSize({ width: 1280, height: 1080 });
-    console.log('viewport')
+    console.log('page', new Date());
     for (const { id, url } of pages) {
       await page.goto(url);
       await timeout(1000);
