@@ -1,4 +1,5 @@
-import chromium from 'chrome-aws-lambda';
+const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 import initMiddleware from '../../lib/init-middleware';
 import validateMiddleware from '../../lib/validate-middleware';
 import { query, validationResult } from 'express-validator';
@@ -19,7 +20,6 @@ async function getBrowserInstance() {
 
   if (!executablePath) {
     // running locally
-    const puppeteer = require('puppeteer');
     return puppeteer.launch({
       args: chromium.args,
       headless: true,
