@@ -67,6 +67,7 @@ exports.handler = async (event, context) => {
   //   return res.status(422).json({ errors: errors.array() });
   // }
   let browser = null;
+  let screenshotBuffer;
   try {
     const { term } = event.queryStringParameters;
     console.log('start: ', new Date());
@@ -75,7 +76,7 @@ exports.handler = async (event, context) => {
     //   executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
     //   headless: true,
     // });
-    const browser = await playwright.launchChromium();
+    browser = await playwright.launchChromium();
     const context = await browser.newContext();
     console.log('browser', new Date());
     // let page = await browser.newPage();
@@ -84,7 +85,7 @@ exports.handler = async (event, context) => {
     for (const { id, url } of pages) {
       await page.goto(url);
       await timeout(1000);
-      const screenshotBuffer = await page.screenshot({ path: `screenshots/test${id}.jpeg` });
+      screenshotBuffer = await page.screenshot();
       // await page.screenshot({ path: `screenshots/test${id}.jpeg` });
       console.log(`✅ ${new Date()} - (${url})`);
       if (id == 1) break;
@@ -95,7 +96,7 @@ exports.handler = async (event, context) => {
     console.log('end: ', new Date());
     return {
       statusCode: 200,
-      body: "Screenshot taken successfully"
+      body: JSON.stringify(screenshotBuffer)
     };
 
   } catch (err) {
