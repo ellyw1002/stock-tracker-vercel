@@ -1,8 +1,9 @@
-const chromium = require('chrome-aws-lambda');
-const puppeteer = require('puppeteer-core');
+// const chromium = require('chrome-aws-lambda');
+// const puppeteer = require('puppeteer-core');
 // const initMiddleware = require('../../lib/init-middleware');
 // const validateMiddleware = require('../../lib/validate-middleware');
 // import { query, validationResult } from 'express-validator';
+const playwright = require("playwright-aws-lambda");
 const pages = require('../../test/screenshots.json');
 
 // const validateBody = initMiddleware(
@@ -69,18 +70,22 @@ exports.handler = async (event, context) => {
   try {
     const { term } = event.queryStringParameters;
     console.log('start: ', new Date());
-    browser = await puppeteer.launch({
-      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
-      headless: true,
-    });
+    // browser = await puppeteer.launch({
+    //   args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+    //   executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
+    //   headless: true,
+    // });
+    const browser = await playwright.launchChromium();
+    const context = await browser._defaultContext;
     console.log('browser', new Date());
-    let page = await browser.newPage();
+    // let page = await browser.newPage();
+    const page = await context.newPage();
     console.log('page', new Date());
     for (const { id, url } of pages) {
       await page.goto(url);
       await timeout(1000);
-      await page.screenshot({ path: `screenshots/test${id}.jpeg` });
+      const screenshotBuffer = await page.screenshot({ path: `screenshots/test${id}.jpeg` });
+      // await page.screenshot({ path: `screenshots/test${id}.jpeg` });
       console.log(`✅ ${new Date()} - (${url})`);
       if (id == 1) break;
     }
@@ -96,7 +101,6 @@ exports.handler = async (event, context) => {
   } catch (err) {
     console.log(err);
     return {
-      status: 'error',
       body: err.message || "Something went wrong"
     };
   }

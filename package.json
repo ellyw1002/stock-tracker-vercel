@@ -19,6 +19,8 @@
     "dotenv": "^16.0.3",
     "express-validator": "^6.14.2",
     "next": "12.3.1",
+    "playwright-aws-lambda": "^0.9.0",
+    "playwright-core": "^1.27.1",
     "puppeteer-core": "^10.4.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.5.0",
