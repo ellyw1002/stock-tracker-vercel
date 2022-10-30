@@ -76,7 +76,7 @@ exports.handler = async (event, context) => {
     //   headless: true,
     // });
     const browser = await playwright.launchChromium();
-    const context = await browser.newContext;
+    const context = await browser.newContext();
     console.log('browser', new Date());
     // let page = await browser.newPage();
     const page = await context.newPage();
