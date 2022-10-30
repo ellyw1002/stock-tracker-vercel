@@ -69,9 +69,8 @@ exports.handler = async (event, context) => {
   try {
     const { term } = event.queryStringParameters;
     console.log('start: ', new Date());
-    console.log('env: ', process.env.CHROME_EXECUTABLE_PATH);
     browser = await puppeteer.launch({
-      args: chromium.args,
+      args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
       executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
       headless: true,
     });
