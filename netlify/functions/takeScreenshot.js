@@ -1,4 +1,5 @@
 const chromium = require('chrome-aws-lambda');
+const puppeteer = require('puppeteer-core');
 // const initMiddleware = require('../../lib/init-middleware');
 // const validateMiddleware = require('../../lib/validate-middleware');
 // import { query, validationResult } from 'express-validator';
@@ -14,34 +15,34 @@ const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-async function getBrowserInstance() {
-  const executablePath = await chromium.executablePath;
-  console.log(executablePath);
-  if (!executablePath) {
-    // running locally
-    return puppeteer.launch({
-      args: chromium.args,
-      headless: true,
-      defaultViewport: {
-        width: 1280,
-        height: 800
-      },
-      ignoreHTTPSErrors: true
-    });
-  }
-  console.log('in prod screenshot');
-  return chromium.puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: {
-      width: 1280,
-      height: 1080
-    },
-    executablePath,
-    headless: chromium.headless,
-    ignoreHTTPSErrors: true,
-    ignoreDefaultArgs: ['--disable-extensions']
-  });
-}
+// async function getBrowserInstance() {
+//   const executablePath = await chromium.executablePath;
+//   console.log(executablePath);
+//   if (!executablePath) {
+//     // running locally
+//     return puppeteer.launch({
+//       args: chromium.args,
+//       headless: true,
+//       defaultViewport: {
+//         width: 1280,
+//         height: 800
+//       },
+//       ignoreHTTPSErrors: true
+//     });
+//   }
+//   console.log('in prod screenshot');
+//   return chromium.puppeteer.launch({
+//     args: chromium.args,
+//     defaultViewport: {
+//       width: 1280,
+//       height: 1080
+//     },
+//     executablePath,
+//     headless: chromium.headless,
+//     ignoreHTTPSErrors: true,
+//     ignoreDefaultArgs: ['--disable-extensions']
+//   });
+// }
 
 // async function getBrowserInstance() {
 //   const executablePath = await chromium.executablePath;
@@ -68,7 +69,12 @@ exports.handler = async (event, context) => {
   try {
     const { term } = event.queryStringParameters;
     console.log('start: ', new Date());
-    browser = await getBrowserInstance();
+    console.log('env: ', process.env.CHROME_EXECUTABLE_PATH);
+    browser = await puppeteer.launch({
+      args: chromium.args,
+      executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
+      headless: true,
+    });
     console.log('browser', new Date());
     let page = await browser.newPage();
     console.log('page', new Date());
