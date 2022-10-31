@@ -1,8 +1,6 @@
-// const chromium = require('chrome-aws-lambda');
-// const puppeteer = require('puppeteer-core');
-// const initMiddleware = require('../../lib/init-middleware');
-// const validateMiddleware = require('../../lib/validate-middleware');
-// import { query, validationResult } from 'express-validator';
+const initMiddleware = require('../../lib/init-middleware');
+const validateMiddleware = require('../../lib/validate-middleware');
+const { query, validationResult } = require('express-validator');
 const playwright = require("playwright-aws-lambda");
 const pages = require('../../test/screenshots.json');
 
@@ -16,49 +14,15 @@ const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
 
-// async function getBrowserInstance() {
-//   const executablePath = await chromium.executablePath;
-//   console.log(executablePath);
-//   if (!executablePath) {
-//     // running locally
-//     return puppeteer.launch({
-//       args: chromium.args,
-//       headless: true,
-//       defaultViewport: {
-//         width: 1280,
-//         height: 800
-//       },
-//       ignoreHTTPSErrors: true
-//     });
-//   }
-//   console.log('in prod screenshot');
-//   return chromium.puppeteer.launch({
-//     args: chromium.args,
-//     defaultViewport: {
-//       width: 1280,
-//       height: 1080
-//     },
-//     executablePath,
-//     headless: chromium.headless,
-//     ignoreHTTPSErrors: true,
-//     ignoreDefaultArgs: ['--disable-extensions']
-//   });
-// }
-
-// async function getBrowserInstance() {
-//   const executablePath = await chromium.executablePath;
-//   console.log(executablePath);
-//   const puppeteer = require("puppeteer");
-//   return puppeteer.launch({
-//     args: chromium.args,
-//     headless: true,
-//     defaultViewport: {
-//       width: 1280,
-//       height: 720,
-//     },
-//     ignoreHTTPSErrors: true,
-//   });
-// }
+async function getBrowserInstance() {
+  if (process.env.CHROME_EXECUTABLE_PATH) {
+    // running locally
+    const { chromium } = require('playwright');
+    return await chromium.launch();
+  }
+  console.log('in prod screenshot');
+  return await playwright.launchChromium();
+}
 
 exports.handler = async (event, context) => {
   // await validateBody(req, res);
@@ -70,28 +34,24 @@ exports.handler = async (event, context) => {
   let screenshotBuffer;
   try {
     const { term } = event.queryStringParameters;
+
     console.log('start: ', new Date());
-    // browser = await puppeteer.launch({
-    //   args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
-    //   executablePath: process.env.CHROME_EXECUTABLE_PATH || await chromium.executablePath,
-    //   headless: true,
-    // });
-    browser = await playwright.launchChromium();
+    browser = await getBrowserInstance();
+
     const context = await browser.newContext();
     console.log('browser', new Date());
-    // let page = await browser.newPage();
+
     const page = await context.newPage();
     console.log('page', new Date());
-    for (const { id, url } of pages) {
-      await page.goto(url);
-      await timeout(1000);
-      screenshotBuffer = await page.screenshot();
-      // await page.screenshot({ path: `screenshots/test${id}.jpeg` });
-      console.log(`✅ ${new Date()} - (${url})`);
-      if (id == 1) break;
-    }
-    // await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
-    // await page.screenshot({ path: `test.jpeg` });
+
+    await page.setViewportSize({ width: 1280, height: 1080 });
+
+    await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
+    await timeout(1000);
+    filePath = `screenshots/${(new Date().toJSON().slice(0, 10))}+${term}.png`;
+    screenshotBuffer = await page.screenshot({ path: filePath });
+    console.log(`✅ ${new Date()} - (${term})`);
+
     await browser.close();
     console.log('end: ', new Date());
     return {
