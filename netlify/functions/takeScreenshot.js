@@ -1,6 +1,6 @@
-const initMiddleware = require('../../lib/init-middleware');
-const validateMiddleware = require('../../lib/validate-middleware');
-const { query, validationResult } = require('express-validator');
+// const initMiddleware = require('../../lib/init-middleware');
+// const validateMiddleware = require('../../lib/validate-middleware');
+// const { query, validationResult } = require('express-validator');
 const playwright = require("playwright-aws-lambda");
 const pages = require('../../test/screenshots.json');
 
