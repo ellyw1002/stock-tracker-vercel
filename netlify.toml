@@ -3,3 +3,5 @@
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"
+[dev]
+  autoLaunch = false

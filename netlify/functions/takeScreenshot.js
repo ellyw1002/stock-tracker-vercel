@@ -44,14 +44,13 @@ exports.handler = async (event, context) => {
     const page = await context.newPage();
     console.log('page', new Date());
 
-    await page.setViewportSize({ width: 1280, height: 1080 });
+    await page.setViewportSize({ width: 1280, height: 900 });
 
     await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
     await timeout(1000);
-    filePath = `screenshots/${(new Date().toJSON().slice(0, 10))}+${term}.png`;
-    screenshotBuffer = await page.screenshot({ path: filePath });
+    // filePath = `screenshots/${(new Date().toJSON().slice(0, 10))}+${term}.png`;
+    screenshotBuffer = (await page.screenshot()).toString('base64');
     console.log(`✅ ${new Date()} - (${term})`);
-
     await browser.close();
     console.log('end: ', new Date());
     return {
