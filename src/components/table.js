@@ -1,11 +1,14 @@
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import ScreenshotModal from '../components/modal';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeStockAction } from '../actions/stockList.action.js';
 import { takeScreenshotAction } from '../actions/screenshot.action';
 import { selectStockList } from '../selectors/stockList.selector';
 
 export function TableComponent() {
+  const [modalShow, setModalShow] = React.useState(false);
   const dispatch = useDispatch();
   const stockList = useSelector(selectStockList);
   const dispatchTakeScreenshot = () => (dispatch(takeScreenshotAction(stockList)));
@@ -48,9 +51,15 @@ export function TableComponent() {
                     // console.log('string: ', j);
                     return < td key={j} > {value}</td>;
                   } else {
-                    let imgSource = `data:image/png;base64, ${value}`;
+                    let filename = `${stock.symbol}-${(new Date().toJSON().slice(0, 10))}.png`;
                     // console.log(imgSource);
-                    return <td key={j}><img src={imgSource} width="150" height="100" /></td>;
+                    // return <td key={j}><img src={imgSource} width="150" height="100" /></td>;
+                    return (
+                      <td key={j}>
+                        <a href="#modal" onClick={() => setModalShow(true)}>{filename}</a>
+                        <ScreenshotModal show={modalShow} onHide={() => setModalShow(false)} base64={value} />
+                      </td>
+                    )
                   }
                 })
               }
