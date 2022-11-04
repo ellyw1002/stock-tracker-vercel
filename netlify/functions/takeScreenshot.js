@@ -61,7 +61,8 @@ exports.handler = async (event, context) => {
   } catch (err) {
     console.log(err);
     return {
-      body: err.message || "Something went wrong"
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message }),
     };
   }
 };

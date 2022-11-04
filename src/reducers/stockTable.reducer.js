@@ -42,9 +42,9 @@ export default function stock(state = initialState, action) {
         case TAKE_SCREENSHOT_SUCCESS:
             return {
                 ...state,
-                stockList: state.stockList.map((stockObject, index) =>
-                    action.payload[index] ?
-                        { ...stockObject, morningScreenshot: action.payload[index] } : stockObject),
+                stockList: state.stockList.map((stockObject) =>
+                    action.payload[stockObject.symbol] ?
+                        { ...stockObject, morningScreenshot: action.payload[stockObject.symbol] } : stockObject),
                 morningScreenshotState: DONE_STATE
             };
         case TAKE_SCREENSHOT_FAILED:

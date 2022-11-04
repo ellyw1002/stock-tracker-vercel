@@ -9,7 +9,7 @@ import {
 function* takeScreenshotAsync(action) {
   yield put(takeScreenshotLoadingAction());
   const response = yield call(takeScreenshot, action.payload);
-  console.log('in saga: ', JSON.stringify(response));
+  console.log('in saga: ', response);
   if (!response) {
     yield put(takeScreenshotFailedAction());
   } else {
