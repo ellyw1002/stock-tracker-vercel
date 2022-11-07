@@ -8,7 +8,7 @@ import { takeScreenshotAction } from '../actions/screenshot.action';
 import { selectStockList } from '../selectors/stockList.selector';
 
 export function TableComponent() {
-  const [modalShow, setModalShow] = React.useState(false);
+  const [modalShow, setModalShow] = React.useState();
   const dispatch = useDispatch();
   const stockList = useSelector(selectStockList);
   const dispatchTakeScreenshot = () => (dispatch(takeScreenshotAction(stockList)));
@@ -56,8 +56,8 @@ export function TableComponent() {
                     // return <td key={j}><img src={imgSource} width="150" height="100" /></td>;
                     return (
                       <td key={j}>
-                        <a href="#modal" onClick={() => setModalShow(true)}>{filename}</a>
-                        <ScreenshotModal show={modalShow} onHide={() => setModalShow(false)} base64={value} />
+                        <a href="#modal" onClick={() => setModalShow(index)}>{filename}</a>
+                        <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={value} />
                       </td>
                     )
                   }
