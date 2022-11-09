@@ -40,23 +40,72 @@ export default function stock(state = initialState, action) {
                 ]
             };
         case TAKE_SCREENSHOT_SUCCESS:
-            return {
-                ...state,
-                stockList: state.stockList.map((stockObject) =>
-                    action.payload[stockObject.symbol] ?
-                        { ...stockObject, morningScreenshot: action.payload[stockObject.symbol] } : stockObject),
-                morningScreenshotState: DONE_STATE
-            };
+            const { response, time } = action.payload;
+            if (time === 'morning') {
+                return {
+                    ...state,
+                    stockList: state.stockList.map((stockObject) =>
+                        response[stockObject.symbol] ?
+                            { ...stockObject, morningScreenshot: response[stockObject.symbol] } : stockObject),
+                    morningScreenshotState: DONE_STATE
+                };
+            }
+            else if (time === 'afternoon') {
+                return {
+                    ...state,
+                    stockList: state.stockList.map((stockObject) =>
+                        response[stockObject.symbol] ?
+                            { ...stockObject, afternoonScreenshot: response[stockObject.symbol] } : stockObject),
+                    afternoonScreenshotState: DONE_STATE
+                };
+            }
+            else if (time === 'evening') {
+                return {
+                    ...state,
+                    stockList: state.stockList.map((stockObject) =>
+                        response[stockObject.symbol] ?
+                            { ...stockObject, eveningScreenshot: response[stockObject.symbol] } : stockObject),
+                    eveningScreenshotState: DONE_STATE
+                };
+            }
         case TAKE_SCREENSHOT_FAILED:
-            return {
-                ...state,
-                morningScreenshotState: FAILED_STATE
-            };
+            if (action.payload === 'morning') {
+                return {
+                    ...state,
+                    morningScreenshotState: FAILED_STATE
+                };
+            }
+            else if (action.payload === 'afternoon') {
+                return {
+                    ...state,
+                    afternoonScreenshotState: FAILED_STATE
+                };
+            }
+            else if (action.payload === 'evening') {
+                return {
+                    ...state,
+                    eveningScreenshotState: FAILED_STATE
+                };
+            }
         case TAKE_SCREENSHOT_LOADING:
-            return {
-                ...state,
-                morningScreenshotState: LOADING_STATE
-            };
+            if (action.payload === 'morning') {
+                return {
+                    ...state,
+                    morningScreenshotState: LOADING_STATE
+                };
+            }
+            else if (action.payload === 'afternoon') {
+                return {
+                    ...state,
+                    afternoonScreenshotState: LOADING_STATE
+                };
+            }
+            else if (action.payload === 'evening') {
+                return {
+                    ...state,
+                    eveningScreenshotState: LOADING_STATE
+                };
+            }
         default:
             return state;
     }

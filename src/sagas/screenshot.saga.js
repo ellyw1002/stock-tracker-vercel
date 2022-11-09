@@ -7,13 +7,18 @@ import {
 } from '../actions/screenshot.action';
 
 function* takeScreenshotAsync(action) {
-  yield put(takeScreenshotLoadingAction());
-  const response = yield call(takeScreenshot, action.payload);
+  const { stockList, time } = action.payload;
+  if (!stockList || stockList.length === 0) {
+    console.log('stock is required');
+    return;
+  }
+  yield put(takeScreenshotLoadingAction(time));
+  const response = yield call(takeScreenshot, stockList);
   console.log('in saga: ', response);
   if (!response) {
-    yield put(takeScreenshotFailedAction());
+    yield put(takeScreenshotFailedAction(time));
   } else {
-    yield put(takeScreenshotSuccessAction(response));
+    yield put(takeScreenshotSuccessAction({ response, time }));
   }
 }
 

@@ -3,22 +3,24 @@ const TAKE_SCREENSHOT_FAILED = 'takeScreenshotFailed';
 const TAKE_SCREENSHOT_SUCCESS = 'takeScreenshotSuccess';
 const TAKE_SCREENSHOT_LOADING = 'takeScreenshotLoading';
 
-export const takeScreenshotAction = (stockList) => {
+export const takeScreenshotAction = (stockInfo) => {
   return {
     type: TAKE_SCREENSHOT,
-    payload: stockList
+    payload: stockInfo
   };
 };
 
-export const takeScreenshotFailedAction = () => {
+export const takeScreenshotFailedAction = (time) => {
   return {
-    type: TAKE_SCREENSHOT_FAILED
+    type: TAKE_SCREENSHOT_FAILED,
+    payload: time
   };
 };
 
-export const takeScreenshotLoadingAction = () => {
+export const takeScreenshotLoadingAction = (time) => {
   return {
-    type: TAKE_SCREENSHOT_LOADING
+    type: TAKE_SCREENSHOT_LOADING,
+    payload: time
   };
 };
 

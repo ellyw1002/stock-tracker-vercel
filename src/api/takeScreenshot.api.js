@@ -19,9 +19,6 @@ function takeScreenshotWithRetry(url, retries = 3) {
 
 export async function takeScreenshot(stockList = []) {
   let stockScreenshots = [];
-  if (!stockList || stockList.length === 0) {
-    throw 'stock is required';
-  }
   for (const item of stockList) {
     try {
       console.log('before screenshot: ', item.symbol);
