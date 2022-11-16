@@ -4,6 +4,7 @@ import Modal from 'react-bootstrap/Modal';
 export default function ScreenshotModal(props) {
   const { base64 } = props;
   const imgSource = `data:image/png;base64, ${base64}`;
+  const image = base64 ? <img src={imgSource} className="img-fluid" /> : <div>No Screenshot</div>
   return (
     <Modal
       {...props}
@@ -15,7 +16,7 @@ export default function ScreenshotModal(props) {
       <Modal.Header closeButton>
       </Modal.Header>
       <Modal.Body>
-        <img src={imgSource} className="img-fluid" />
+        {image}
       </Modal.Body>
     </Modal>
   );

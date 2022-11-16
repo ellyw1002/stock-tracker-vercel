@@ -13,12 +13,11 @@ function* takeScreenshotAsync(action) {
     return;
   }
   yield put(takeScreenshotLoadingAction(time));
-  const response = yield call(takeScreenshot, stockList);
-  console.log('in saga: ', response);
-  if (!response) {
+  const response = yield call(takeScreenshot, action.payload);
+  if (!response.statusCode === 200) {
     yield put(takeScreenshotFailedAction(time));
   } else {
-    yield put(takeScreenshotSuccessAction({ response, time }));
+    yield put(takeScreenshotSuccessAction(time));
   }
 }
 

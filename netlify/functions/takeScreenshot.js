@@ -3,7 +3,16 @@
 // const { query, validationResult } = require('express-validator');
 const playwright = require("playwright-aws-lambda");
 const pages = require('../../test/screenshots.json');
+// const { insertMorningScreenshot } = require('./insertMorningScreenshot');
 
+const {
+  DATABASE_URL,
+  SUPABASE_SERVICE_API_KEY
+} = process.env;
+
+// Connect to our database
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 // const validateBody = initMiddleware(
 //   validateMiddleware([
 //     query('term').trim().escape().toUpperCase()
@@ -24,6 +33,49 @@ async function getBrowserInstance() {
   return await playwright.launchChromium();
 }
 
+async function insertMorningScreenshot(symbol, buffer) {
+  const { data, error } = await supabase
+    .from('stock_screenshots')
+    .update({
+      'morning': buffer
+    })
+    .match({ 'symbol': symbol });
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
+  };
+
+};
+
+async function insertAfternoonScreenshot(symbol, buffer) {
+  const { data, error } = await supabase
+    .from('stock_screenshots')
+    .update({
+      'afternoon': buffer
+    })
+    .match({ 'symbol': symbol });
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
+  };
+};
+
+async function insertEveningScreenshot(symbol, buffer) {
+  const { data, error } = await supabase
+    .from('stock_screenshots')
+    .update({
+      'evening': buffer
+    })
+    .match({ 'symbol': symbol });
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(data)
+  };
+};
+
 exports.handler = async (event, context) => {
   // await validateBody(req, res);
   // const errors = validationResult(req);
@@ -33,7 +85,7 @@ exports.handler = async (event, context) => {
   let browser = null;
   let screenshotBuffer;
   try {
-    const { term } = event.queryStringParameters;
+    const { time, term } = event.queryStringParameters;
 
     console.log('start: ', new Date());
     browser = await getBrowserInstance();
@@ -53,9 +105,13 @@ exports.handler = async (event, context) => {
     console.log(`✅ ${new Date()} - (${term})`);
     await browser.close();
     console.log('end: ', new Date());
+
+    if (time === 'morning') await insertMorningScreenshot(term, screenshotBuffer);
+    else if (time === 'afternoon') await insertAfternoonScreenshot(term, screenshotBuffer);
+    else if (time === 'evening') await insertEveningScreenshot(term, screenshotBuffer);
+
     return {
-      statusCode: 200,
-      body: JSON.stringify(screenshotBuffer)
+      statusCode: 200
     };
 
   } catch (err) {

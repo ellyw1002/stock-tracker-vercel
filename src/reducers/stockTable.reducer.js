@@ -40,31 +40,22 @@ export default function stock(state = initialState, action) {
                 ]
             };
         case TAKE_SCREENSHOT_SUCCESS:
-            const { response, time } = action.payload;
-            if (time === 'morning') {
+            if (action.payload === 'morning') {
+                console.log('morning success')
                 return {
                     ...state,
-                    stockList: state.stockList.map((stockObject) =>
-                        response[stockObject.symbol] ?
-                            { ...stockObject, morningScreenshot: response[stockObject.symbol] } : stockObject),
                     morningScreenshotState: DONE_STATE
                 };
             }
-            else if (time === 'afternoon') {
+            else if (action.payload === 'afternoon') {
                 return {
                     ...state,
-                    stockList: state.stockList.map((stockObject) =>
-                        response[stockObject.symbol] ?
-                            { ...stockObject, afternoonScreenshot: response[stockObject.symbol] } : stockObject),
                     afternoonScreenshotState: DONE_STATE
                 };
             }
-            else if (time === 'evening') {
+            else if (action.payload === 'evening') {
                 return {
                     ...state,
-                    stockList: state.stockList.map((stockObject) =>
-                        response[stockObject.symbol] ?
-                            { ...stockObject, eveningScreenshot: response[stockObject.symbol] } : stockObject),
                     eveningScreenshotState: DONE_STATE
                 };
             }

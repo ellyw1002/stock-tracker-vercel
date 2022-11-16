@@ -11,10 +11,13 @@ const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 exports.handler = async event => {
   const { data, error } = await supabase
     .from('stock_screenshots')
-    .select();
-
-  // Did it work?
-  console.log(data, error);
+    .select('symbol');
+  if (error) {
+    console.log('Error in getStockScreenshot: ', error);
+    return {
+      statusCode: 500
+    };
+  }
   return {
     statusCode: 200,
     body: JSON.stringify(data)

@@ -17,19 +17,20 @@ function takeScreenshotWithRetry(url, retries = 3) {
   }).catch(error => console.log(error.message));
 }
 
-export async function takeScreenshot(stockList = []) {
+export async function takeScreenshot(payload) {
+  const { stockList, time } = payload;
   let stockScreenshots = [];
   for (const item of stockList) {
     try {
       console.log('before screenshot: ', item.symbol);
-      const response = await takeScreenshotWithRetry(`api/takeScreenshot?term=${item.symbol}`, 3);
-      console.log('response: ', response);
-      stockScreenshots[item.symbol] = await response.json();
+      await takeScreenshotWithRetry(`api/takeScreenshot?term=${item.symbol}&time=${time}`, 3);
+
     } catch (error) {
       console.log(`failed after 3 retries for stock ${item.symbol}`);
       break;
     }
   };
-  console.log('returning from api: ', stockScreenshots);
-  return stockScreenshots;
+  return {
+    statusCode: 200
+  };
 }

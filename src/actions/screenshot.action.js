@@ -24,10 +24,10 @@ export const takeScreenshotLoadingAction = (time) => {
   };
 };
 
-export const takeScreenshotSuccessAction = (response) => {
+export const takeScreenshotSuccessAction = (time) => {
   return {
     type: TAKE_SCREENSHOT_SUCCESS,
-    payload: response
+    payload: time
   };
 };
 

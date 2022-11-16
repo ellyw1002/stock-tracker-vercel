@@ -5,6 +5,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeStockAction } from '../actions/stockList.action.js';
 import { takeScreenshotAction } from '../actions/screenshot.action';
+import { getStockList, getStockScreenshot } from '../api/fetchStock.api';
 import {
   selectStockList,
   selectMorningStatus,
@@ -19,12 +20,23 @@ const FAILED_STATE = 'failed';
 
 export function TableComponent() {
   const [modalShow, setModalShow] = React.useState();
+  const [stockList, setStockList] = React.useState([]);
+  const [currentScreenshot, setCurrentScreenshot] = React.useState('');
+
   const dispatch = useDispatch();
 
-  const stockList = useSelector(selectStockList);
   const morningState = useSelector(selectMorningStatus);
   const afternoonState = useSelector(selectAfternoonStatus);
   const eveningState = useSelector(selectEveningStatus);
+
+  React.useEffect(() => {
+    const getAllData = async () => {
+      let response = await getStockList();
+      if (!response) return;
+      setStockList(response);
+    };
+    getAllData();
+  }, [morningState, afternoonState, eveningState])
 
   const dispatchMorningScreenshot = () => (dispatch(takeScreenshotAction({ stockList, time: 'morning' })));
   const dispatchAfternoonScreenshot = () => (dispatch(takeScreenshotAction({ stockList, time: 'afternoon' })));
@@ -37,6 +49,20 @@ export function TableComponent() {
     }
     return true;
   }
+
+  const onScreenshotClick = async (symbol, time, index) => {
+    const buffer = await getStockScreenshot(symbol, time);
+    if (!buffer) {
+      setCurrentScreenshot('');
+      setModalShow(index);
+      return;
+    }
+    setCurrentScreenshot(buffer);
+    setModalShow(index);
+    // console.log('buffer', currentScreenshot);
+  };
+
+
   return (
     <Table striped>
       <thead>
@@ -89,12 +115,25 @@ export function TableComponent() {
         {
           stockList.map((stock, index) => (
             <tr key={index}>
-              {
+              <td key='stock_symbol'>{stock.symbol}</td>
+              <td key='morning'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'morning', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}</a>
+                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>
+              <td key='afternoon'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'afternoon', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-afternoon.png`}</a>
+                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>
+              <td key='evening'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'evening', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-evening.png`}</a>
+                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>
+              {/* {
                 Object.values(stock).map((value, j) => {
                   if (j === 1 && morningState === FAILED_STATE) return <td key={j}>Error</td>;
                   else if (j === 2 && afternoonState === FAILED_STATE) return <td key={j}>Error</td>;
                   else if (j === 3 && eveningState === FAILED_STATE) return <td key={j}>Error</td>;
-                  else if (!isBase64(value) || value === stock.symbol) {
+                  else if (!value || !isBase64(value) || value === stock.symbol) {
                     // console.log('string: ', j);
                     return < td key={j} > {value}</td>;
                   } else {
@@ -112,7 +151,7 @@ export function TableComponent() {
                     )
                   }
                 })
-              }
+              } */}
               <td><button onClick={() => dispatch(removeStockAction(index))}>Remove</button></td>
             </tr>
           ))
