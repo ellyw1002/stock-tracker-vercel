@@ -27,7 +27,9 @@ export async function takeScreenshot(payload) {
 
     } catch (error) {
       console.log(`failed after 3 retries for stock ${item.symbol}`);
-      break;
+      return {
+        statusCode: 500
+      }
     }
   };
   return {

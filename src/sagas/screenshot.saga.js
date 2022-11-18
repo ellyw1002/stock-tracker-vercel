@@ -17,7 +17,7 @@ function* takeScreenshotAsync(action) {
   if (!response.statusCode === 200) {
     yield put(takeScreenshotFailedAction(time));
   } else {
-    yield put(takeScreenshotSuccessAction(time));
+    yield put(takeScreenshotSuccessAction());
   }
 }
 

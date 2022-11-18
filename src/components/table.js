@@ -4,64 +4,76 @@ import ScreenshotModal from '../components/modal';
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeStockAction } from '../actions/stockList.action.js';
-import { takeScreenshotAction } from '../actions/screenshot.action';
+import { takeScreenshotAction, updatedPageAction } from '../actions/screenshot.action';
 import { getStockList, getStockScreenshot } from '../api/fetchStock.api';
-import {
-  selectStockList,
-  selectMorningStatus,
-  selectAfternoonStatus,
-  selectEveningStatus
-} from '../selectors/stockList.selector';
-
-const NOT_STARTED_STATE = 'notStarted';
-const LOADING_STATE = 'loading';
-const DONE_STATE = 'done';
-const FAILED_STATE = 'failed';
+import { selectDatabaseUpdated, selectInsertStockSuccess, selectRemoveStockSuccess } from '../selectors/stockList.selector';
 
 export function TableComponent() {
   const [modalShow, setModalShow] = React.useState();
   const [stockList, setStockList] = React.useState([]);
   const [currentScreenshot, setCurrentScreenshot] = React.useState('');
 
-  const dispatch = useDispatch();
+  const defaultStatus = {
+    NOT_STARTED: true,
+    DONE: false
+  };
+  const [morningStatus, setMorningStatus] = React.useState(defaultStatus);
+  const [afternoonStatus, setAfternoonStatus] = React.useState(defaultStatus);
+  const [eveningStatus, setEveningStatus] = React.useState(defaultStatus);
 
-  const morningState = useSelector(selectMorningStatus);
-  const afternoonState = useSelector(selectAfternoonStatus);
-  const eveningState = useSelector(selectEveningStatus);
+  const databaseUpdated = useSelector(selectDatabaseUpdated);
+  const insertSuccess = useSelector(selectInsertStockSuccess);
+  const removeSuccess = useSelector(selectRemoveStockSuccess);
+
+  const dispatch = useDispatch();
 
   React.useEffect(() => {
     const getAllData = async () => {
       let response = await getStockList();
       if (!response) return;
-      setStockList(response);
+      response.status.map((statusObject) => {
+        if (statusObject.time === 'morning') setMorningStatus(statusObject);
+        else if (statusObject.time === 'afternoon') setAfternoonStatus(statusObject);
+        else if (statusObject.time === 'evening') setEveningStatus(statusObject);
+      });
+      setStockList(response.stockList);
+      dispatch(updatedPageAction());
     };
     getAllData();
-  }, [morningState, afternoonState, eveningState])
+  }, [databaseUpdated])
 
-  const dispatchMorningScreenshot = () => (dispatch(takeScreenshotAction({ stockList, time: 'morning' })));
-  const dispatchAfternoonScreenshot = () => (dispatch(takeScreenshotAction({ stockList, time: 'afternoon' })));
-  const dispatchEveningScreenshot = () => (dispatch(takeScreenshotAction({ stockList, time: 'evening' })));
-  function isBase64(str) {
-    try {
-      window.atob(str);
-    } catch (e) {
-      return false;
-    }
-    return true;
-  }
+  const loadingState = {
+    NOT_STARTED: false,
+    DONE: false
+  };
+  const dispatchMorningScreenshot = () => {
+    dispatch(takeScreenshotAction({ stockList, time: 'morning' }));
+    setMorningStatus(loadingState);
+  };
+  const dispatchAfternoonScreenshot = () => {
+    dispatch(takeScreenshotAction({ stockList, time: 'afternoon' }));
+    setAfternoonStatus(loadingState);
+  };
+  const dispatchEveningScreenshot = () => {
+    dispatch(takeScreenshotAction({ stockList, time: 'evening' }));
+    setEveningStatus(loadingState);
+  };
 
-  const onScreenshotClick = async (symbol, time, index) => {
+  const onScreenshotClick = async (id, symbol, time) => {
     const buffer = await getStockScreenshot(symbol, time);
     if (!buffer) {
       setCurrentScreenshot('');
-      setModalShow(index);
+      setModalShow(id);
       return;
     }
     setCurrentScreenshot(buffer);
-    setModalShow(index);
+    setModalShow(id);
     // console.log('buffer', currentScreenshot);
   };
 
+  let isMorningLoading = !morningStatus.NOT_STARTED && !morningStatus.DONE;
+  let isAfternoonLoading = !afternoonStatus.NOT_STARTED && !afternoonStatus.DONE;
+  let isEveningLoading = !eveningStatus.NOT_STARTED && !eveningStatus.DONE;
 
   return (
     <Table striped>
@@ -75,11 +87,11 @@ export function TableComponent() {
             <Button
               variant="outline-light"
               size="sm"
-              onClick={morningState === NOT_STARTED_STATE ? dispatchMorningScreenshot : null}
-              disabled={morningState === DONE_STATE}
+              onClick={morningStatus.NOT_STARTED ? dispatchMorningScreenshot : null}
+              disabled={morningStatus.DONE}
             >
               {
-                morningState === LOADING_STATE ? '🔄' : '📸'
+                isMorningLoading ? '🔄' : '📸'
               }
             </Button>
           </th>
@@ -88,11 +100,11 @@ export function TableComponent() {
             <Button
               variant="outline-light"
               size="sm"
-              onClick={afternoonState === NOT_STARTED_STATE ? dispatchAfternoonScreenshot : null}
-              disabled={afternoonState === DONE_STATE}
+              onClick={afternoonStatus.NOT_STARTED ? dispatchAfternoonScreenshot : null}
+              disabled={afternoonStatus.DONE}
             >
               {
-                afternoonState === LOADING_STATE ? '🔄' : '📸'
+                isAfternoonLoading ? '🔄' : '📸'
               }
             </Button>
           </th>
@@ -101,11 +113,11 @@ export function TableComponent() {
             <Button
               variant="outline-light"
               size="sm"
-              onClick={eveningState === NOT_STARTED_STATE ? dispatchEveningScreenshot : null}
-              disabled={eveningState === DONE_STATE}
+              onClick={eveningStatus.NOT_STARTED ? dispatchEveningScreenshot : null}
+              disabled={eveningStatus.DONE}
             >
               {
-                eveningState === LOADING_STATE ? '🔄' : '📸'
+                isEveningLoading ? '🔄' : '📸'
               }
             </Button>
           </th>
@@ -113,26 +125,36 @@ export function TableComponent() {
       </thead>
       <tbody>
         {
-          stockList.map((stock, index) => (
-            <tr key={index}>
-              <td key='stock_symbol'>{stock.symbol}</td>
-              <td key='morning'>
-                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'morning', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}</a>
-                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
-              </td>
-              <td key='afternoon'>
-                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'afternoon', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-afternoon.png`}</a>
-                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
-              </td>
-              <td key='evening'>
-                <a href="#modal" onClick={() => onScreenshotClick(stock.symbol, 'evening', index)}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-evening.png`}</a>
-                <ScreenshotModal show={modalShow === index} onHide={() => setModalShow(false)} base64={currentScreenshot} />
-              </td>
+          stockList.map((stock) => {
+            const morningTableCell = (morningStatus.NOT_STARTED || !morningStatus.DONE)
+              ? <td key='morning'>-</td>
+              : (<td key='morning'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.id, stock.symbol, 'morning')}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}</a>
+                <ScreenshotModal show={modalShow === stock.id} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>);
+            const afternoonTableCell = (afternoonStatus.NOT_STARTED || !afternoonStatus.DONE)
+              ? <td key='afternoon'>-</td>
+              : (<td key='afternoon'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.id, stock.symbol, 'afternoon')}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}</a>
+                <ScreenshotModal show={modalShow === stock.id} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>);
+            const eveningTableCell = (eveningStatus.NOT_STARTED || !eveningStatus.DONE)
+              ? <td key='evening'>-</td>
+              : (<td key='evening'>
+                <a href="#modal" onClick={() => onScreenshotClick(stock.id, stock.symbol, 'evening')}>{`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}</a>
+                <ScreenshotModal show={modalShow === stock.id} onHide={() => setModalShow(false)} base64={currentScreenshot} />
+              </td>);
+            return (
+              <tr key={stock.id}>
+                <td key='stock_symbol'>{stock.symbol}</td>
+                {morningTableCell}
+                {afternoonTableCell}
+                {eveningTableCell}
               {/* {
                 Object.values(stock).map((value, j) => {
-                  if (j === 1 && morningState === FAILED_STATE) return <td key={j}>Error</td>;
-                  else if (j === 2 && afternoonState === FAILED_STATE) return <td key={j}>Error</td>;
-                  else if (j === 3 && eveningState === FAILED_STATE) return <td key={j}>Error</td>;
+                  if (j === 1 && morningStatus === FAILED_STATE) return <td key={j}>Error</td>;
+                  else if (j === 2 && afternoonStatus === FAILED_STATE) return <td key={j}>Error</td>;
+                  else if (j === 3 && eveningStatus === FAILED_STATE) return <td key={j}>Error</td>;
                   else if (!value || !isBase64(value) || value === stock.symbol) {
                     // console.log('string: ', j);
                     return < td key={j} > {value}</td>;
@@ -152,9 +174,10 @@ export function TableComponent() {
                   }
                 })
               } */}
-              <td><button onClick={() => dispatch(removeStockAction(index))}>Remove</button></td>
+                <td><button onClick={() => dispatch(removeStockAction(stock.id))}>Remove</button></td>
             </tr>
-          ))
+            );
+          })
         }
       </tbody>
     </Table>
