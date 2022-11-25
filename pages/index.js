@@ -3,29 +3,22 @@ import { createRoot } from 'react-dom';
 import { Provider } from 'react-redux';
 import { store } from '../src/app/store';
 import App from '../src/App';
-// Importing the Bootstrap CSS
-import 'bootstrap/dist/css/bootstrap.min.css';
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
 
-const Home = () => (
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>
-);
+export default function Home() {
+  return (
+    <div className={styles.container}>
+      <Head>
+        <title>Stock Tracker</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
 
-export default Home;
-// const container = document.getElementById('root');
-// const root = createRoot(container);
-// root.render(
-//   <React.StrictMode>
-//     <Provider store={store}>
-//       <App />
-//     </Provider>
-//   </React.StrictMode>
-// );
-
-// // If you want to start measuring performance in your app, pass a function
-// // to log results (for example: reportWebVitals(console.log))
-// // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-// reportWebVitals();
+      <React.StrictMode>
+        <Provider store={store}>
+          <App />
+        </Provider>
+      </React.StrictMode>
+    </div>
+  );
+}

@@ -20,6 +20,13 @@ exports.handler = async (event, context) => {
 		const { term } = event.queryStringParameters;
 		console.log('query: ', term);
 
+		if (!term) {
+			return {
+				statusCode: 200,
+				body: JSON.stringify([])
+			};
+		}
+
 		const searchResults = await yahooFinance.search(term, { newsCount: 0 });
 		const stockResults = searchResults.quotes;
 		// console.log(searchResults.count)
