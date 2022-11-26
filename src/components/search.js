@@ -9,7 +9,7 @@ import Button from '@mui/material/Button';
 import { useFetchStockSymbolQuery, useAddStockMutation } from '../services/searchApi.js';
 
 export function SearchBar() {
-  const [value, setValue] = React.useState();
+  const [value, setValue] = React.useState(null);
   const [inputValue, setInputValue] = React.useState('');
 
   const { data: options, isError, isFetching } = useFetchStockSymbolQuery(inputValue);
