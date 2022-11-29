@@ -14,7 +14,7 @@ exports.handler = async event => {
     .select('id, symbol');
 
   const status = await supabase
-    .from('app_status')
+    .from('status')
     .select();
 
   if (error) {

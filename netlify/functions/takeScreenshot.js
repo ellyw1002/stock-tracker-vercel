@@ -41,11 +41,11 @@ async function insertMorningScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('app_status')
+    .from('status')
     .update({
-      'DONE': true
+      'morning': true
     })
-    .match({ 'time': 'morning' });
+    .match({ 'id': 1 });
   return {
     statusCode: 200,
     body: JSON.stringify(data)
@@ -61,11 +61,11 @@ async function insertAfternoonScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('app_status')
+    .from('status')
     .update({
-      'DONE': true
+      'afternoon': true
     })
-    .match({ 'time': 'afternoon' });
+    .match({ 'id': 1 });
   return {
     statusCode: 200,
     body: JSON.stringify(data)
@@ -80,11 +80,11 @@ async function insertEveningScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('app_status')
+    .from('status')
     .update({
-      'DONE': true
+      'evening': true
     })
-    .match({ 'time': 'evening' });
+    .match({ 'id': 1 });
 
   return {
     statusCode: 200,
@@ -102,13 +102,6 @@ exports.handler = async (event, context) => {
   let screenshotBuffer;
   try {
     const { time, term } = event.queryStringParameters;
-
-    await supabase
-      .from('app_status')
-      .update({
-        'NOT_STARTED': false
-      })
-      .match({ 'time': time });
 
     console.log('start: ', new Date());
     browser = await getBrowserInstance();

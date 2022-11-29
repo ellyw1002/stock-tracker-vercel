@@ -1,7 +1,7 @@
 import { api } from "./api";
 
 export const searchApi = api
-  .enhanceEndpoints({ addTagTypes: ["Search"] })
+  .enhanceEndpoints({ addTagTypes: ['StockList'] })
   .injectEndpoints({
     endpoints: (build) => ({
       fetchStockSymbol: build.query({
@@ -17,10 +17,16 @@ export const searchApi = api
           }, []);
         }
       }),
-      addStock: build.mutation({
-        query: (term) => `/insertStock?term=${term}`
-      })
+      stockList: build.query({
+        query: () => `/getStockList`,
+        providesTags: ['StockList'],
+      }),
+      fetchStockScreenshot: build.query({
+        query: ({ symbol, time }) => {
+          return `/getStockScreenshot?symbol=${symbol}&time=${time}`;
+        },
+      }),
     })
   });
 
-export const { useFetchStockSymbolQuery, useAddStockMutation } = searchApi;
+export const { useFetchStockSymbolQuery, useStockListQuery, useFetchStockScreenshotQuery } = searchApi;
