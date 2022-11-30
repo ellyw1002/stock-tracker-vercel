@@ -6,10 +6,12 @@ export const stockListApi = api
   .injectEndpoints({
     endpoints: (build) => ({
       addStock: build.mutation({
-        query: (term) => `/insertStock?term=${term}`
+        query: (term) => `/insertStock?term=${term}`,
+        invalidatesTags: ['StockList'],
       }),
       removeStock: build.mutation({
-        query: (uuid) => `/removeStock?term=${uuid}`
+        query: (id) => `/removeStock?term=${id}`,
+        invalidatesTags: ['StockList'],
       }),
       takeScreenshot: build.mutation({
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {

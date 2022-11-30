@@ -14,7 +14,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function ScreenshotModal(props) {
   const { base64, isLoading } = props;
   const imgSource = `data:image/png;base64, ${base64}`;
-  const image = base64 ? <img width="100%" src={imgSource} /> :
+  const image = (!isLoading && base64) ? <img width="100%" src={imgSource} /> :
     <Alert severity="error">No Screenshot</Alert>;
 
   return (

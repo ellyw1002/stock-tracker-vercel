@@ -7,6 +7,7 @@ import { removeStockAction } from '../actions/stockList.action.js';
 import { takeScreenshotAction, updatedPageAction } from '../actions/screenshot.action';
 import { getStockList, getStockScreenshot } from '../api/fetchStock.api';
 import { selectDatabaseUpdated, selectInsertStockSuccess, selectRemoveStockSuccess } from '../selectors/stockList.selector';
+import { TableButtonRow } from './tableButtonRow';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -17,9 +18,11 @@ import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CircularProgress from '@mui/material/CircularProgress';
+import RemoveButton from '@mui/icons-material/CancelOutlined';
+import Alert from '@mui/material/Alert';
 
 import { useStockListQuery, useFetchStockScreenshotQuery } from '../services/searchApi.js';
-import { useTakeScreenshotMutation } from '../services/stockListApi';
+import { useTakeScreenshotMutation, useRemoveStockMutation } from '../services/stockListApi';
 
 export function TableComponent() {
   let stockList, status;
@@ -28,107 +31,120 @@ export function TableComponent() {
   // const [currentScreenshot, setCurrentScreenshot] = React.useState('');
 
   const { data, isError: stockListError, isFetching: isStockListFetching } = useStockListQuery();
-  const [takeScreenshot, { data: screenshotFailed, isError, isLoading: isTakingScreenshot }] = useTakeScreenshotMutation();
-  const { data: currentScreenshot, isFetching: isScreenshotFetching } = useFetchStockScreenshotQuery(screenshotShow, { skip: screenshotShow === {} });
+  let [takeScreenshot, { data: screenshotFailed, isError: screenshotError, isLoading: isTakingScreenshot }] = useTakeScreenshotMutation();
+  const { data: currentScreenshot, isLoading: isScreenshotFetching } = useFetchStockScreenshotQuery(
+    screenshotShow, { skip: screenshotShow === {} });
+  const [removeStock, { isError: isRemoveError }] = useRemoveStockMutation();
 
   if (!isStockListFetching) ({ stockList, status } = data);
-
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        {!isStockListFetching && (<TableHead>
-          <TableRow>
-            <TableCell>Symbol</TableCell>
-            <TableCell align="left">
-              Morning&nbsp;
-              <IconButton disabled={isTakingScreenshot || status[0].morning} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'morning' })}>
-                {(isTakingScreenshot && !status[0].morning) ?
-                  <CircularProgress color="inherit" size={20} /> :
-                  <PhotoCameraIcon color="inherit" fontSize="20px" />}
-              </IconButton>
+    <>
+      {stockListError && <Alert severity="error">Failed to get stock list</Alert>}
+      {screenshotError && <Alert severity="error">Failed to take screenshot</Alert>}
+      {isRemoveError && <Alert severity="error">Failed to remove stock</Alert>}
+      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Symbol</TableCell>
+              <TableCell align="left">
+                Morning&nbsp;
+                <IconButton disabled={isTakingScreenshot || !status || status[0].morning} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'morning' })}>
+                  {(isTakingScreenshot && !status[0].morning) ?
+                    <CircularProgress color="inherit" size={20} /> :
+                    <PhotoCameraIcon color="inherit" fontSize="20px" />}
+                </IconButton>
 
-            </TableCell>
-            <TableCell align="left">
-              Afternoon&nbsp;
-              <IconButton disabled={isTakingScreenshot || status[0].afternoon} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'afternoon' })}>
-                {(isTakingScreenshot && !status[0].afternoon && status[0].morning) ?
-                  <CircularProgress color="inherit" size={20} /> :
-                  <PhotoCameraIcon color="inherit" fontSize="20px" />}
-              </IconButton>
-            </TableCell>
-            <TableCell align="left">
-              Evening&nbsp;
-              <IconButton disabled={isTakingScreenshot || status[0].evening} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'evening' })}>
-                {(isTakingScreenshot && !status[0].evening && status[0].morning && status[0].afternoon) ?
-                  <CircularProgress color="inherit" size={20} /> :
-                  <PhotoCameraIcon color="inherit" fontSize="20px" />}
-              </IconButton>
-            </TableCell>
-          </TableRow>
-        </TableHead>)}
-        <TableBody>
-          {!isStockListFetching && stockList.map((stock) => {
-            const morningTableCell = (status[0].morning)
-              ? (<TableCell align="left" key='morning'>
-                <a href="#modal" onClick={() => {
-                  setScreenshotShow({ symbol: stock.symbol, time: 'morning' });
-                  setModalShow(stock.id);
-                }}>
-                  {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}
-                </a>
-                <ScreenshotModal open={modalShow === stock.id}
-                  onClose={() => {
+              </TableCell>
+              <TableCell align="left">
+                Afternoon&nbsp;
+                <IconButton disabled={isTakingScreenshot || !status || status[0]?.afternoon} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'afternoon' })}>
+                  {(isTakingScreenshot && !status[0].afternoon && status[0].morning) ?
+                    <CircularProgress color="inherit" size={20} /> :
+                    <PhotoCameraIcon color="inherit" fontSize="20px" />}
+                </IconButton>
+              </TableCell>
+              <TableCell align="left">
+                Evening&nbsp;
+                <IconButton disabled={isTakingScreenshot || !status || status[0]?.evening} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'evening' })}>
+                  {(isTakingScreenshot && !status[0].evening && status[0].morning && status[0].afternoon) ?
+                    <CircularProgress color="inherit" size={20} /> :
+                    <PhotoCameraIcon color="inherit" fontSize="20px" />}
+                </IconButton>
+              </TableCell>
+              <TableCell align="right"></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {!isStockListFetching && stockList.map((stock) => {
+              const morningTableCell = (status[0].morning)
+                ? (<TableCell align="left" key='morning'>
+                  <a href="#modal" onClick={() => {
+                    setScreenshotShow({ symbol: stock.symbol, time: 'morning' });
+                    setModalShow(stock.id);
+                  }}>
+                    {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`}
+                  </a>
+                  <ScreenshotModal open={modalShow === stock.id}
+                    onClose={() => {
+                      setModalShow(false);
+                      setScreenshotShow({});
+                    }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
+                </TableCell>)
+                : <TableCell align="left" key='morning'>-</TableCell>;
+              const afternoonTableCell = (status[0].afternoon)
+                ? (<TableCell align="left" key='afternoon'>
+                  <a href="#modal" onClick={() => {
+                    setScreenshotShow({ symbol: stock.symbol, time: 'afternoon' });
+                    setModalShow(stock.id);
+                  }}>
+                    {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-afternoon.png`}
+                  </a>
+                  <ScreenshotModal open={modalShow === stock.id} onClose={() => {
                     setModalShow(false);
                     setScreenshotShow({});
                   }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
-              </TableCell>)
-              : <TableCell align="left" key='morning'>-</TableCell>;
-            const afternoonTableCell = (status[0].afternoon)
-              ? (<TableCell align="left" key='afternoon'>
-                <a href="#modal" onClick={() => {
-                  setScreenshotShow({ symbol: stock.symbol, time: 'afternoon' });
-                  setModalShow(stock.id);
-                }}>
-                  {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-afternoon.png`}
-                </a>
-                <ScreenshotModal open={modalShow === stock.id} onClose={() => {
-                  setModalShow(false);
-                  setScreenshotShow({});
-                }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
-              </TableCell>)
-              : <TableCell align="left" key='afternoon'>-</TableCell>;
-            const eveningTableCell = (status[0].evening)
-              ? (<TableCell align="left" key='evening'>
-                <a href="#modal" onClick={() => {
-                  setScreenshotShow({ symbol: stock.symbol, time: 'evening' });
-                  setModalShow(stock.id);
-                }}>
-                  {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-evening.png`}
-                </a>
-                <ScreenshotModal open={modalShow === stock.id} onClose={() => {
-                  setModalShow(false);
-                  setScreenshotShow({});
-                }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
-              </TableCell>)
-              : <TableCell align="left" key='evening'>-</TableCell>
+                </TableCell>)
+                : <TableCell align="left" key='afternoon'>-</TableCell>;
+              const eveningTableCell = (status[0].evening)
+                ? (<TableCell align="left" key='evening'>
+                  <a href="#modal" onClick={() => {
+                    setScreenshotShow({ symbol: stock.symbol, time: 'evening' });
+                    setModalShow(stock.id);
+                  }}>
+                    {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-evening.png`}
+                  </a>
+                  <ScreenshotModal open={modalShow === stock.id} onClose={() => {
+                    setModalShow(false);
+                    setScreenshotShow({});
+                  }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
+                </TableCell>)
+                : <TableCell align="left" key='evening'>-</TableCell>
 
-            return (
-              <TableRow
-                key={stock.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {stock.symbol}
-                </TableCell>
-                {morningTableCell}
-                {afternoonTableCell}
-                {eveningTableCell}
-              </TableRow>
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+              return (
+                <TableRow
+                  key={stock.id}
+                  sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                >
+                  <TableCell component="th" scope="row">
+                    {stock.symbol}
+                  </TableCell>
+                  {morningTableCell}
+                  {afternoonTableCell}
+                  {eveningTableCell}
+                  <TableCell align="center" key='remove'>
+                    <IconButton onClick={() => removeStock(stock.id)}>
+                      <RemoveButton sx={{ fontSize: "0.875rem" }} />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {!isStockListFetching && <TableButtonRow stockList={stockList}></TableButtonRow>}
+    </>
   );
 }
 
