@@ -32,7 +32,7 @@ export function TableComponent() {
 
   const { data, isError: stockListError, isFetching: isStockListFetching } = useStockListQuery();
   let [takeScreenshot, { data: screenshotFailed, isError: screenshotError, isLoading: isTakingScreenshot }] = useTakeScreenshotMutation();
-  const { data: currentScreenshot, isLoading: isScreenshotFetching } = useFetchStockScreenshotQuery(
+  const { data: currentScreenshot, isFetching: isScreenshotFetching } = useFetchStockScreenshotQuery(
     screenshotShow, { skip: screenshotShow === {} });
   const [removeStock, { isError: isRemoveError }] = useRemoveStockMutation();
 

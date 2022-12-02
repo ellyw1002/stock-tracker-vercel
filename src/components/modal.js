@@ -14,12 +14,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 export default function ScreenshotModal(props) {
   const { base64, isLoading } = props;
   const imgSource = `data:image/png;base64, ${base64}`;
-  const image = (!isLoading && base64) ? <img width="100%" src={imgSource} /> :
+  const image = (base64) ? <img width="100%" src={imgSource} /> :
     <Alert severity="error">No Screenshot</Alert>;
 
   return (
     <Dialog
-      {...props}
+      open={props.open}
+      onClose={props.onClose}
       fullWidth
       maxWidth="xl"
       keepMounted
@@ -35,7 +36,7 @@ export default function ScreenshotModal(props) {
           </Box>
         </Box>
       </DialogTitle>
-      <DialogContent>
+      <DialogContent style={{ textAlign: 'center' }}>
         {isLoading ? <CircularProgress color="inherit" size={20} /> :
           (<DialogContentText minHeight="50px" id="alert-dialog-slide-description">
         {image}

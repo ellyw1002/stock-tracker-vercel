@@ -1,24 +1,30 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { useRemoveStockMutation } from '../services/stockListApi';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import { useRemoveStockMutation, useResetStockMutation } from '../services/stockListApi';
 
 export function TableButtonRow(props) {
   const { stockList } = props;
-  let [removeStock, { isError: removeAllError, isLoading: removeAllLoading }] = useRemoveStockMutation();
-
+  const [removeStock, { isError: removeAllError, isLoading: removeAllLoading }] = useRemoveStockMutation();
+  const [resetAllStocks, { isError: resetError, isLoading: resetLoading }] = useResetStockMutation();
   const deleteAllStocks = (stockList) => {
-    for (const stock of Array.from(stockList)) {
+    for (const stock of stockList) {
       removeStock(stock.id);
     }
   };
   return (
     <Stack spacing={1} direction="row" justifyContent="flex-end" >
-      <Button size="small" variant="contained" >
-        Reset
+      {removeAllError && <Alert severity='error'>Failed to delete</Alert>}
+      {resetError && <Alert severity='error'>Failed to reset</Alert>}
+      <Button size="small" variant="contained" onClick={() => resetAllStocks({ stockList })} disabled={resetLoading || resetError}>
+        {resetLoading ?
+          <CircularProgress color="inherit" size={20} /> : `Reset`}
       </Button>
-      <Button size="small" variant="contained" onClick={() => deleteAllStocks(stockList)}>
-        Delete All
+      <Button size="small" variant="contained" onClick={() => deleteAllStocks(stockList)} disabled={removeAllLoading || removeAllError}>
+        {removeAllLoading ?
+          <CircularProgress color="inherit" size={20} /> : `Delete All`}
       </Button>
     </Stack>
   );

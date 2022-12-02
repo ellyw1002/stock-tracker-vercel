@@ -13,6 +13,24 @@ export const stockListApi = api
         query: (id) => `/removeStock?term=${id}`,
         invalidatesTags: ['StockList'],
       }),
+      resetStock: build.mutation({
+        async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
+          const { stockList } = accessLevelRequests;
+          const isFirst = true;
+          for (const stock of stockList) {
+            const response = await baseQuery({
+              url: `resetStock?term=${stock.id}&isFirst=${isFirst}`,
+              method: 'GET'
+            });
+            if (response.error) {
+              return { error: 'error' };
+            }
+            isFirst = false;
+          }
+          return { data: 'success' };
+        },
+        invalidatesTags: ['StockList'],
+      }),
       takeScreenshot: build.mutation({
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
           let screenshotFailed = [];
@@ -40,4 +58,4 @@ export const stockListApi = api
     })
   });
 
-export const { useAddStockMutation, useRemoveStockMutation, useTakeScreenshotMutation } = stockListApi;
+export const { useAddStockMutation, useRemoveStockMutation, useTakeScreenshotMutation, useResetStockMutation } = stockListApi;
