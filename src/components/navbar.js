@@ -7,13 +7,14 @@ import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import AdbIcon from '@mui/icons-material/ShowChart';
 import { logoBase64 } from '../../public/logo';
+import Image from 'next/image'
 
 export function NavComponent() {
   return (
     <AppBar position='static' sx={{ bgcolor: 'primary.light' }}>
       <Container maxWidth="xl" >
         <Toolbar disableGutters >
-          <img src={`data:image/png;base64, ${logoBase64}`} width="240" height="50" />
+          <Image src={`data:image/png;base64, ${logoBase64}`} width="240" height="50" />
           <Typography
             variant="h6"
             noWrap
