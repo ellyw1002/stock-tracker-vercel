@@ -11,12 +11,11 @@ import CloseButton from '@mui/icons-material/CancelOutlined';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DownloadIcon from '@mui/icons-material/Download';
-import Image from 'next/image'
 
 export default function ScreenshotModal(props) {
   const { base64, isLoading, fileName } = props;
   const imgSource = `data:image/png;base64, ${base64}`;
-  const image = (base64) ? <Image width="100%" src={imgSource} /> :
+  const image = (base64) ? <img width="100%" src={imgSource} /> :
     <Alert severity="error">No Screenshot</Alert>;
 
   const onDownload = (base64, fileName) => {
