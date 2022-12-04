@@ -39,8 +39,8 @@ export function TableComponent() {
       {stockListError && <Alert severity="error">Failed to get stock list</Alert>}
       {screenshotError && <Alert severity="error">Failed to take screenshot</Alert>}
       {isRemoveError && <Alert severity="error">Failed to remove stock</Alert>}
-      <TableContainer sx={{ maxHeight: 440 }} component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <TableContainer sx={{ maxHeight: 1000 }} component={Paper}>
+        <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow>
               <TableCell>Symbol</TableCell>

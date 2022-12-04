@@ -16,7 +16,7 @@ export function TableButtonRow(props) {
     window.localStorage.clear();
   };
   return (
-    <Stack spacing={1} direction="row" justifyContent="flex-end" >
+    <Stack spacing={1} direction="row" justifyContent="flex-end" paddingBottom={2}>
       {removeAllError && <Alert severity='error'>Failed to delete</Alert>}
       {resetError && <Alert severity='error'>Failed to reset</Alert>}
       <Button size="small" variant="contained" onClick={() => resetAllStocks({ stockList })} disabled={resetLoading || resetError}>
