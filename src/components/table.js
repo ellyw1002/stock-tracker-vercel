@@ -58,7 +58,6 @@ export function TableComponent() {
                     <CircularProgress color="inherit" size={20} /> :
                     <PhotoCameraIcon color="inherit" fontSize="20px" />}
                 </IconButton>
-
               </TableCell>
               <TableCell align="left">
                 Afternoon&nbsp;
@@ -104,7 +103,8 @@ export function TableComponent() {
                     onClose={() => {
                       setModalShow(false);
                       setScreenshotShow({});
-                    }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
+                    }} base64={currentScreenshot} isLoading={isScreenshotFetching}
+                    fileName={`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-morning.png`} />
                 </TableCell>);
               } else {
                 morningTableCell = <TableCell align="left" key='morning'>-</TableCell>;
@@ -125,7 +125,8 @@ export function TableComponent() {
                   <ScreenshotModal open={modalShow === stock.id} onClose={() => {
                     setModalShow(false);
                     setScreenshotShow({});
-                  }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
+                  }} base64={currentScreenshot} isLoading={isScreenshotFetching}
+                    fileName={`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-afternoon.png`} />
                 </TableCell>)
               } else {
                 afternoonTableCell = <TableCell align="left" key='afternoon'>-</TableCell>;
@@ -146,7 +147,8 @@ export function TableComponent() {
                   <ScreenshotModal open={modalShow === stock.id} onClose={() => {
                     setModalShow(false);
                     setScreenshotShow({});
-                  }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
+                  }} base64={currentScreenshot} isLoading={isScreenshotFetching}
+                    fileName={`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-evening.png`} />
                 </TableCell>)
               } else {
                 eveningTableCell = <TableCell align="left" key='evening'>-</TableCell>;

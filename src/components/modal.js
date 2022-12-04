@@ -10,12 +10,20 @@ import IconButton from '@mui/material/IconButton';
 import CloseButton from '@mui/icons-material/CancelOutlined';
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
+import DownloadIcon from '@mui/icons-material/Download';
 
 export default function ScreenshotModal(props) {
-  const { base64, isLoading } = props;
+  const { base64, isLoading, fileName } = props;
   const imgSource = `data:image/png;base64, ${base64}`;
   const image = (base64) ? <img width="100%" src={imgSource} /> :
     <Alert severity="error">No Screenshot</Alert>;
+
+  const onDownload = (base64, fileName) => {
+    let a = document.createElement("a"); //Create <a>
+    a.href = "data:image/png;base64," + base64; //Image Base64 Goes here
+    a.download = fileName; //File name Here
+    a.click(); //Downloaded file
+  }
 
   return (
     <Dialog
@@ -30,6 +38,10 @@ export default function ScreenshotModal(props) {
         <Box minHeight="15px" height="15px" display="flex" alignItems="center">
           <Box flexGrow={1} ></Box>
           <Box>
+            <IconButton disabled={!base64 || isLoading}
+              size='small' variant='text' onClick={() => onDownload(base64, fileName)}>
+              <DownloadIcon color="inherit" fontSize="20px" />
+            </IconButton>
             <IconButton onClick={props.onClose}>
               <CloseButton />
             </IconButton>
