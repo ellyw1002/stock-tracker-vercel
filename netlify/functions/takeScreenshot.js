@@ -1,9 +1,4 @@
-// const initMiddleware = require('../../lib/init-middleware');
-// const validateMiddleware = require('../../lib/validate-middleware');
-// const { query, validationResult } = require('express-validator');
 const playwright = require("playwright-aws-lambda");
-const pages = require('../../test/screenshots.json');
-// const { insertMorningScreenshot } = require('./insertMorningScreenshot');
 
 const {
   DATABASE_URL,
@@ -13,11 +8,6 @@ const {
 // Connect to our database
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
-// const validateBody = initMiddleware(
-//   validateMiddleware([
-//     query('term').trim().escape().toUpperCase()
-//   ], validationResult)
-// );
 
 const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -29,7 +19,6 @@ async function getBrowserInstance() {
     const { chromium } = require('playwright');
     return await chromium.launch();
   }
-  console.log('in prod screenshot');
   return await playwright.launchChromium();
 }
 
@@ -92,12 +81,7 @@ async function insertEveningScreenshot(symbol, buffer) {
   };
 };
 
-exports.handler = async (event, context) => {
-  // await validateBody(req, res);
-  // const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   return res.status(422).json({ errors: errors.array() });
-  // }
+exports.handler = async (event) => {
   let browser = null;
   let screenshotBuffer;
   try {
@@ -116,7 +100,6 @@ exports.handler = async (event, context) => {
 
     await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
     await timeout(1000);
-    // filePath = `screenshots/${(new Date().toJSON().slice(0, 10))}+${term}.png`;
     screenshotBuffer = (await page.screenshot()).toString('base64');
     console.log(`✅ ${new Date()} - (${term})`);
     await browser.close();

@@ -5,7 +5,6 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import AdbIcon from '@mui/icons-material/ShowChart';
 import { logoBase64 } from '../../public/logo';
 import Image from 'next/image'
 

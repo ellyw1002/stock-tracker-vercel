@@ -1,6 +1,3 @@
-import { KeyboardReturn } from "@mui/icons-material";
-import { removeStock } from "../api/stockList.api";
-import stock from "../reducers/stockTable.reducer";
 import { api } from "./api";
 
 export const stockListApi = api

@@ -2,7 +2,6 @@ import React from 'react';
 import { NavComponent, SearchBar, TableComponent } from './components/index.js';
 import CssBaseline from '@mui/material/CssBaseline';
 import Stack from '@mui/material/Stack';
-// import '../src/App.css';
 
 function App() {
   return (

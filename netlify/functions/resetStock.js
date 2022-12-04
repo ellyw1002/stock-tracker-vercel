@@ -32,7 +32,7 @@ exports.handler = async event => {
   }
 
   if (error) {
-    console.log('Error in insertStock: ', error);
+    console.log('Error in resetStock: ', error);
     return {
       statusCode: 500
     };
