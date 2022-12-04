@@ -20,18 +20,22 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CircularProgress from '@mui/material/CircularProgress';
 import RemoveButton from '@mui/icons-material/CancelOutlined';
 import Alert from '@mui/material/Alert';
+import ErrorIcon from '@mui/icons-material/Error';
 
 import { useStockListQuery, useFetchStockScreenshotQuery } from '../services/searchApi.js';
 import { useTakeScreenshotMutation, useRemoveStockMutation } from '../services/stockListApi';
 
 export function TableComponent() {
-  let stockList, status;
+  let stockList, status, screenshotFailed;
   const [modalShow, setModalShow] = React.useState();
   const [screenshotShow, setScreenshotShow] = React.useState({});
   // const [currentScreenshot, setCurrentScreenshot] = React.useState('');
 
   const { data, isError: stockListError, isFetching: isStockListFetching } = useStockListQuery();
-  let [takeScreenshot, { data: screenshotFailed, isError: screenshotError, isLoading: isTakingScreenshot }] = useTakeScreenshotMutation();
+  let [
+    takeScreenshot,
+    { isError: screenshotError, isLoading: isTakingScreenshot }
+  ] = useTakeScreenshotMutation();
   const { data: currentScreenshot, isFetching: isScreenshotFetching } = useFetchStockScreenshotQuery(
     screenshotShow, { skip: screenshotShow === {} });
   const [removeStock, { isError: isRemoveError }] = useRemoveStockMutation();
@@ -77,8 +81,19 @@ export function TableComponent() {
           </TableHead>
           <TableBody>
             {!isStockListFetching && stockList.map((stock) => {
-              const morningTableCell = (status[0].morning)
-                ? (<TableCell align="left" key='morning'>
+              let morningTableCell, afternoonTableCell, eveningTableCell;
+              screenshotFailed = JSON.parse(localStorage.getItem(`${stock.id}`)) || {
+                morning: false,
+                afternoon: false,
+                evening: false
+              };
+
+              if (screenshotFailed.morning) {
+                morningTableCell = (<TableCell align="left" key='morning'>
+                  <ErrorIcon color='error' />
+                </TableCell>);
+              } else if (status[0].morning) {
+                morningTableCell = (<TableCell align="left" key='morning'>
                   <a href="#modal" onClick={() => {
                     setScreenshotShow({ symbol: stock.symbol, time: 'morning' });
                     setModalShow(stock.id);
@@ -90,10 +105,17 @@ export function TableComponent() {
                       setModalShow(false);
                       setScreenshotShow({});
                     }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
-                </TableCell>)
-                : <TableCell align="left" key='morning'>-</TableCell>;
-              const afternoonTableCell = (status[0].afternoon)
-                ? (<TableCell align="left" key='afternoon'>
+                </TableCell>);
+              } else {
+                morningTableCell = <TableCell align="left" key='morning'>-</TableCell>;
+              }
+
+              if (screenshotFailed.afternoon) {
+                afternoonTableCell = (<TableCell align="left" key='afternoon'>
+                  <ErrorIcon color='error' />
+                </TableCell>);
+              } else if (status[0].afternoon) {
+                afternoonTableCell = (<TableCell align="left" key='afternoon'>
                   <a href="#modal" onClick={() => {
                     setScreenshotShow({ symbol: stock.symbol, time: 'afternoon' });
                     setModalShow(stock.id);
@@ -105,9 +127,16 @@ export function TableComponent() {
                     setScreenshotShow({});
                   }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
                 </TableCell>)
-                : <TableCell align="left" key='afternoon'>-</TableCell>;
-              const eveningTableCell = (status[0].evening)
-                ? (<TableCell align="left" key='evening'>
+              } else {
+                afternoonTableCell = <TableCell align="left" key='afternoon'>-</TableCell>;
+              }
+
+              if (screenshotFailed.evening) {
+                eveningTableCell = (<TableCell align="left" key='evening'>
+                  <ErrorIcon color='error' />
+                </TableCell>);
+              } else if (status[0].evenint) {
+                eveningTableCell = (<TableCell align="left" key='evening'>
                   <a href="#modal" onClick={() => {
                     setScreenshotShow({ symbol: stock.symbol, time: 'evening' });
                     setModalShow(stock.id);
@@ -119,7 +148,9 @@ export function TableComponent() {
                     setScreenshotShow({});
                   }} base64={currentScreenshot} isLoading={isScreenshotFetching} />
                 </TableCell>)
-                : <TableCell align="left" key='evening'>-</TableCell>
+              } else {
+                eveningTableCell = <TableCell align="left" key='evening'>-</TableCell>;
+              }
 
               return (
                 <TableRow

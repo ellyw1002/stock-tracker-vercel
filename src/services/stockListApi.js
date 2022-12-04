@@ -1,4 +1,6 @@
+import { KeyboardReturn } from "@mui/icons-material";
 import { removeStock } from "../api/stockList.api";
+import stock from "../reducers/stockTable.reducer";
 import { api } from "./api";
 
 export const stockListApi = api
@@ -10,7 +12,10 @@ export const stockListApi = api
         invalidatesTags: ['StockList'],
       }),
       removeStock: build.mutation({
-        query: (id) => `/removeStock?term=${id}`,
+        query: (id) => {
+          window.localStorage.removeItem(id);
+          return `/removeStock?term=${id}`;
+        },
         invalidatesTags: ['StockList'],
       }),
       resetStock: build.mutation({
@@ -26,6 +31,11 @@ export const stockListApi = api
               return { error: 'error' };
             }
             isFirst = false;
+            window.localStorage.setItem(`${stock.id}`, JSON.stringify({
+              morning: false,
+              afternoon: false,
+              evening: false
+            }));
           }
           return { data: 'success' };
         },
@@ -33,10 +43,14 @@ export const stockListApi = api
       }),
       takeScreenshot: build.mutation({
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
-          let screenshotFailed = [];
           const { stockList, time } = accessLevelRequests;
           for (const stock of stockList) {
             const retries = 3;
+            let screenshotState = JSON.parse(window.localStorage.getItem(`${stock.id}`)) || {
+              morning: false,
+              afternoon: false,
+              evening: false
+            };
             while (retries > 0) {
               console.log('stock: ', stock.symbol);
               console.log('retries: ', retries);
@@ -47,11 +61,13 @@ export const stockListApi = api
               if (!response.error) break;
               retries--;
             }
-            if (retries === 0) screenshotFailed[stock.id] = true;
-            else screenshotFailed[stock.id] = false;
+            if (retries === 0 && time === 'morning') screenshotState.morning = true;
+            if (retries === 0 && time === 'afternoon') screenshotState.afternoon = true;
+            if (retries === 0 && time === 'evening') screenshotState.evening = true;
+
+            window.localStorage.setItem(`${stock.id}`, JSON.stringify(screenshotState));
           }
-          console.log(screenshotFailed);
-          return { data: screenshotFailed };
+          return { data: 'success' };
         },
         invalidatesTags: ['StockList'],
       }),

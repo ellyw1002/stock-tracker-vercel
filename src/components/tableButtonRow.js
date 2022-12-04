@@ -13,6 +13,7 @@ export function TableButtonRow(props) {
     for (const stock of stockList) {
       removeStock(stock.id);
     }
+    window.localStorage.clear();
   };
   return (
     <Stack spacing={1} direction="row" justifyContent="flex-end" >
