@@ -129,7 +129,7 @@ export function TableComponent() {
                 eveningTableCell = (<TableCell align="left" key='evening'>
                   <ErrorIcon color='error' />
                 </TableCell>);
-              } else if (status[0].evenint) {
+              } else if (status[0].evening) {
                 eveningTableCell = (<TableCell align="left" key='evening'>
                   <a href="#modal" onClick={() => {
                     setScreenshotShow({ symbol: stock.symbol, time: 'evening' });
