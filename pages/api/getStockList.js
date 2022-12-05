@@ -8,7 +8,7 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
 // Our standard serverless handler function
-exports.handler = async event => {
+export default async (req, res) => {
   const { data, error } = await supabase
     .from('stock_screenshots')
     .select('id, symbol');
@@ -19,18 +19,15 @@ exports.handler = async event => {
 
   if (error) {
     console.log('Error in getStockScreenshot: ', error);
-    return {
-      statusCode: 500
-    };
+    return res.send(500);
   }
   const response = {
     stockList: data,
     status: status.data
-  }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(response)
   };
 
+  return res.json({
+    statusCode: 200,
+    body: JSON.stringify(response)
+  });
 };

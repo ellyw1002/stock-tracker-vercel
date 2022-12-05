@@ -81,11 +81,11 @@ async function insertEveningScreenshot(symbol, buffer) {
   };
 };
 
-exports.handler = async (event) => {
+export default async (req, res) => {
   let browser = null;
   let screenshotBuffer;
   try {
-    const { time, term } = event.queryStringParameters;
+    const { time, term } = req.query;
 
     console.log('start: ', new Date());
     browser = await getBrowserInstance();
@@ -99,7 +99,7 @@ exports.handler = async (event) => {
     await page.setViewportSize({ width: 1280, height: 900 });
 
     await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
-    await timeout(1000);
+    await timeout(5000);
     screenshotBuffer = (await page.screenshot()).toString('base64');
     console.log(`✅ ${new Date()} - (${term})`);
     await browser.close();
@@ -110,15 +110,10 @@ exports.handler = async (event) => {
     else if (time === 'evening') await insertEveningScreenshot(term, screenshotBuffer);
     console.log('successfully inserted screenshot to database');
 
-    return {
-      statusCode: 200
-    };
+    return res.send(200);
 
   } catch (err) {
     console.log(err);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: err.message }),
-    };
+    return res.json({ error: err.message });
   }
 };

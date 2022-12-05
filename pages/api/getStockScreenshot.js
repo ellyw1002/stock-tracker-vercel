@@ -8,8 +8,8 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
 // Our standard serverless handler function
-exports.handler = async event => {
-  const { time, symbol } = event.queryStringParameters;
+export default async (req, res) => {
+  const { time, symbol } = req.query;
   let response;
 
   if (time === 'morning') {
@@ -19,9 +19,7 @@ exports.handler = async event => {
       .eq('symbol', symbol);
     if (error) {
       console.log('Error in getStockScreenshot: ', error);
-      return {
-        statusCode: 500
-      };
+      return res.send(500);
     }
     response = data[0].morning;
   } else if (time === 'afternoon') {
@@ -31,9 +29,7 @@ exports.handler = async event => {
       .eq('symbol', symbol);
     if (error) {
       console.log('Error in getStockScreenshot: ', error);
-      return {
-        statusCode: 500
-      };
+      return res.send(500);
     }
     response = data[0].afternoon;
   } else if (time === 'evening') {
@@ -43,16 +39,14 @@ exports.handler = async event => {
       .eq('symbol', symbol);
     if (error) {
       console.log('Error in getStockScreenshot: ', error);
-      return {
-        statusCode: 500
-      };
+      return res.send(500);
     }
     response = data[0].evening;
   }
   // console.log('data:', data);
-  return {
+  return res.json({
     statusCode: 200,
     body: JSON.stringify(response)
-  };
+  });
 
 };

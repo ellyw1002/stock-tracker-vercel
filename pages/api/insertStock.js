@@ -8,8 +8,8 @@ const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
 // Our standard serverless handler function
-exports.handler = async event => {
-  const { term } = event.queryStringParameters;
+export default async (req, res) => {
+  const { term } = req.query;
   const { data, error } = await supabase
     .from('stock_screenshots')
     .insert([{
@@ -17,12 +17,8 @@ exports.handler = async event => {
     }]);
   if (error) {
     console.log('Error in insertStock: ', error);
-    return {
-      statusCode: 500
-    };
+    return res.send(500);
   }
-  return {
-    statusCode: 200
-  };
+  return res.send(200);
 
 };
