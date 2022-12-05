@@ -99,7 +99,7 @@ export default async (req, res) => {
     await page.setViewportSize({ width: 1280, height: 900 });
 
     await page.goto(`http://ca.finance.yahoo.com/quote/${term}`);
-    await timeout(5000);
+    await timeout(1000);
     screenshotBuffer = (await page.screenshot()).toString('base64');
     console.log(`✅ ${new Date()} - (${term})`);
     await browser.close();
