@@ -22,6 +22,7 @@ export function TableComponent() {
   let stockList, status, screenshotFailed;
   const [modalShow, setModalShow] = React.useState();
   const [screenshotShow, setScreenshotShow] = React.useState({});
+  const [currentTime, setCurrentTime] = React.useState('morning')
   // const [currentScreenshot, setCurrentScreenshot] = React.useState('');
 
   const { data, isError: stockListError, isFetching: isStockListFetching } = useStockListQuery();
@@ -46,24 +47,33 @@ export function TableComponent() {
               <TableCell>Symbol</TableCell>
               <TableCell align="left">
                 Morning&nbsp;
-                <IconButton disabled={isTakingScreenshot || !status || status[0].morning} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'morning' })}>
-                  {(isTakingScreenshot && !status[0].morning) ?
+                <IconButton disabled={isTakingScreenshot} size='small' variant='text' onClick={() => {
+                  takeScreenshot({ stockList, time: 'morning' });
+                  setCurrentTime('morning');
+                }}>
+                  {(isTakingScreenshot && currentTime === 'morning') ?
                     <CircularProgress color="inherit" size={20} /> :
                     <PhotoCameraIcon color="inherit" fontSize="20px" />}
                 </IconButton>
               </TableCell>
               <TableCell align="left">
                 Afternoon&nbsp;
-                <IconButton disabled={isTakingScreenshot || !status || status[0]?.afternoon} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'afternoon' })}>
-                  {(isTakingScreenshot && !status[0].afternoon && status[0].morning) ?
+                <IconButton disabled={isTakingScreenshot} size='small' variant='text' onClick={() => {
+                  takeScreenshot({ stockList, time: 'afternoon' });
+                  setCurrentTime('afternoon');
+                }}>
+                  {(isTakingScreenshot && currentTime === 'afternoon') ?
                     <CircularProgress color="inherit" size={20} /> :
                     <PhotoCameraIcon color="inherit" fontSize="20px" />}
                 </IconButton>
               </TableCell>
               <TableCell align="left">
                 Evening&nbsp;
-                <IconButton disabled={isTakingScreenshot || !status || status[0]?.evening} size='small' variant='text' onClick={() => takeScreenshot({ stockList, time: 'evening' })}>
-                  {(isTakingScreenshot && !status[0].evening && status[0].morning && status[0].afternoon) ?
+                <IconButton disabled={isTakingScreenshot} size='small' variant='text' onClick={() => {
+                  takeScreenshot({ stockList, time: 'evening' });
+                  setCurrentTime('evening');
+                }}>
+                  {(isTakingScreenshot && currentTime === 'evening') ?
                     <CircularProgress color="inherit" size={20} /> :
                     <PhotoCameraIcon color="inherit" fontSize="20px" />}
                 </IconButton>
