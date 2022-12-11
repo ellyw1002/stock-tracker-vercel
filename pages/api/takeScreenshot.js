@@ -30,7 +30,7 @@ async function insertMorningScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status')
+    .from('status_green')
     .update({
       'morning': true
     })
@@ -50,7 +50,7 @@ async function insertAfternoonScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status')
+    .from('status_green')
     .update({
       'afternoon': true
     })
@@ -69,7 +69,7 @@ async function insertEveningScreenshot(symbol, buffer) {
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status')
+    .from('status_green')
     .update({
       'evening': true
     })

@@ -22,7 +22,7 @@ export default async (req, res) => {
 
   if (isFirst === 'true') {
     await supabase
-      .from('status')
+      .from('status_green')
       .update({
         'morning': false,
         'afternoon': false,

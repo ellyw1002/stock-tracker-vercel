@@ -15,7 +15,7 @@ export default async (req, res) => {
     .order('created_at', { ascending: true });
 
   const status = await supabase
-    .from('status')
+    .from('status_green')
     .select();
 
   if (error) {
