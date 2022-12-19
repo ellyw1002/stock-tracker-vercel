@@ -3,6 +3,9 @@
     "pages/api/takeScreenshot.js": {
       "maxDuration": 10
     },
+    "pages/api/takeScreenshotGoogle.js": {
+      "maxDuration": 10
+    },
     "pages/api/*.js": {
       "memory": 128,
       "maxDuration": 10
