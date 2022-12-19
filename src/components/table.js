@@ -16,7 +16,7 @@ import Alert from '@mui/material/Alert';
 import ErrorIcon from '@mui/icons-material/Error';
 
 import { useStockListQuery, useFetchStockScreenshotQuery } from '../services/searchApi.js';
-import { useTakeScreenshotMutation, useRemoveStockMutation } from '../services/stockListApi';
+import { useTakeScreenshotMutation, useRemoveStockMutation, useTakeScreenshotGoogleMutation } from '../services/stockListApi';
 
 export function TableComponent() {
   let stockList, status, screenshotFailed;
@@ -30,6 +30,10 @@ export function TableComponent() {
     takeScreenshot,
     { isError: screenshotError, isLoading: isTakingScreenshot }
   ] = useTakeScreenshotMutation();
+  let [
+    takeScreenshotGoogle,
+    { isError: screenshotGoogleError, isLoading: isTakingScreenshotGoogle }
+  ] = useTakeScreenshotGoogleMutation();
   const { data: currentScreenshot, isFetching: isScreenshotFetching } = useFetchStockScreenshotQuery(
     screenshotShow, { skip: screenshotShow === {} });
   const [removeStock, { isError: isRemoveError }] = useRemoveStockMutation();
@@ -38,7 +42,7 @@ export function TableComponent() {
   return (
     <>
       {stockListError && <Alert severity="error">Failed to get stock list</Alert>}
-      {screenshotError && <Alert severity="error">Failed to take screenshot</Alert>}
+      {(screenshotError || screenshotGoogleError) && <Alert severity="error">Failed to take screenshot</Alert>}
       {isRemoveError && <Alert severity="error">Failed to remove stock</Alert>}
       <TableContainer sx={{ maxHeight: 1000 }} component={Paper}>
         <Table stickyHeader sx={{ minWidth: 650 }} aria-label="simple table">
@@ -78,12 +82,22 @@ export function TableComponent() {
                     <PhotoCameraIcon color="inherit" fontSize="20px" />}
                 </IconButton>
               </TableCell>
+              <TableCell align="left">
+                Night&nbsp;
+                <IconButton disabled={isTakingScreenshotGoogle || isTakingScreenshot} size='small' variant='text' onClick={() => {
+                  takeScreenshotGoogle({ stockList });
+                }}>
+                  {(isTakingScreenshotGoogle) ?
+                    <CircularProgress color="inherit" size={20} /> :
+                    <PhotoCameraIcon color="inherit" fontSize="20px" />}
+                </IconButton>
+              </TableCell>
               <TableCell align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {!isStockListFetching && stockList.map((stock) => {
-              let morningTableCell, afternoonTableCell, eveningTableCell;
+              let morningTableCell, afternoonTableCell, eveningTableCell, nightTableCell;
               screenshotFailed = JSON.parse(localStorage.getItem(`${stock.id}`)) || {
                 morning: false,
                 afternoon: false,
@@ -157,6 +171,28 @@ export function TableComponent() {
                 eveningTableCell = <TableCell align="left" key='evening'>-</TableCell>;
               }
 
+              if (screenshotFailed.night) {
+                nightTableCell = (<TableCell align="left" key='night'>
+                  <ErrorIcon color='error' />
+                </TableCell>);
+              } else if (status[0].night) {
+                nightTableCell = (<TableCell align="left" key='evening'>
+                  <a href="#modal" onClick={() => {
+                    setScreenshotShow({ symbol: stock.symbol, time: 'night' });
+                    setModalShow(stock.id);
+                  }}>
+                    {`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-night.png`}
+                  </a>
+                  <ScreenshotModal open={modalShow === stock.id} onClose={() => {
+                    setModalShow(false);
+                    setScreenshotShow({});
+                  }} base64={currentScreenshot} isLoading={isScreenshotFetching}
+                    fileName={`${stock.symbol}-${new Date().toJSON().slice(0, 10)}-night.png`} />
+                </TableCell>);
+              } else {
+                nightTableCell = <TableCell align="left" key='night'>-</TableCell>;
+              }
+
               return (
                 <TableRow
                   key={stock.id}
@@ -168,6 +204,7 @@ export function TableComponent() {
                   {morningTableCell}
                   {afternoonTableCell}
                   {eveningTableCell}
+                  {nightTableCell}
                   <TableCell align="center" key='remove'>
                     <IconButton onClick={() => removeStock(stock.id)}>
                       <RemoveButton sx={{ fontSize: "0.875rem" }} />

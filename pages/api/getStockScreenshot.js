@@ -42,6 +42,18 @@ export default async (req, res) => {
       return res.send(500);
     }
     response = data[0].evening;
+  } else if (time === 'night') {
+    const { data, error } = await supabase
+      .from('stock_screenshots_green')
+      .select('night')
+      .eq('symbol', symbol);
+    if (error) {
+      console.log('Error in getStockScreenshot: ', error);
+      return {
+        statusCode: 500
+      };
+    }
+    response = data[0].night;
   }
   // console.log('data:', data);
   return res.json({

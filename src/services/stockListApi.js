@@ -68,7 +68,33 @@ export const stockListApi = api
         },
         invalidatesTags: ['StockList'],
       }),
+      takeScreenshotGoogle: build.mutation({
+        async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
+          const { stockList } = accessLevelRequests;
+          for (const stock of stockList) {
+            const retries = 3;
+            let screenshotState = JSON.parse(window.localStorage.getItem(`${stock.id}`)) || {
+              night: false
+            };
+            while (retries > 0) {
+              console.log('stock: ', stock.symbol);
+              console.log('retries: ', retries);
+              const response = await baseQuery({
+                url: `takeScreenshotGoogle?term=${stock.symbol}`,
+                method: 'GET'
+              });
+              if (!response.error) break;
+              retries--;
+            }
+            if (retries === 0) screenshotState.night = true;
+
+            window.localStorage.setItem(`${stock.id}`, JSON.stringify(screenshotState));
+          }
+          return { data: 'success' };
+        },
+        invalidatesTags: ['StockList'],
+      }),
     })
   });
 
-export const { useAddStockMutation, useRemoveStockMutation, useTakeScreenshotMutation, useResetStockMutation } = stockListApi;
+export const { useAddStockMutation, useRemoveStockMutation, useTakeScreenshotMutation, useResetStockMutation, useTakeScreenshotGoogleMutation } = stockListApi;

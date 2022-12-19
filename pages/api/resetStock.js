@@ -17,6 +17,7 @@ export default async (req, res) => {
       'morning': '',
       'afternoon': '',
       'evening': '',
+      'night': ''
     })
     .match({ 'id': term });
 
@@ -27,6 +28,7 @@ export default async (req, res) => {
         'morning': false,
         'afternoon': false,
         'evening': false,
+        'night': false
       })
       .match({ 'id': 1 });
   }
