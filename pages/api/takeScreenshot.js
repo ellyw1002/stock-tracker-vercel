@@ -24,13 +24,13 @@ async function getBrowserInstance() {
 
 async function insertMorningScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .update({
       'morning': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_test')
+    .from('status_green')
     .update({
       'morning': true
     })
@@ -44,13 +44,13 @@ async function insertMorningScreenshot(symbol, buffer) {
 
 async function insertAfternoonScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .update({
       'afternoon': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_test')
+    .from('status_green')
     .update({
       'afternoon': true
     })
@@ -63,13 +63,13 @@ async function insertAfternoonScreenshot(symbol, buffer) {
 
 async function insertEveningScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .update({
       'evening': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_test')
+    .from('status_green')
     .update({
       'evening': true
     })

@@ -24,13 +24,13 @@ async function getBrowserInstance() {
 
 async function insertNightScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .update({
       'night': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_test')
+    .from('status_green')
     .update({
       'night': true
     })

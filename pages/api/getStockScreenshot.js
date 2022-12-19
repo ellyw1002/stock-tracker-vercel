@@ -14,7 +14,7 @@ export default async (req, res) => {
 
   if (time === 'morning') {
     const { data, error } = await supabase
-      .from('stock_screenshots_test')
+      .from('stock_screenshots_green')
       .select('morning')
       .eq('symbol', symbol);
     if (error) {
@@ -24,7 +24,7 @@ export default async (req, res) => {
     response = data[0].morning;
   } else if (time === 'afternoon') {
     const { data, error } = await supabase
-      .from('stock_screenshots_test')
+      .from('stock_screenshots_green')
       .select('afternoon')
       .eq('symbol', symbol);
     if (error) {
@@ -34,7 +34,7 @@ export default async (req, res) => {
     response = data[0].afternoon;
   } else if (time === 'evening') {
     const { data, error } = await supabase
-      .from('stock_screenshots_test')
+      .from('stock_screenshots_green')
       .select('evening')
       .eq('symbol', symbol);
     if (error) {
@@ -44,7 +44,7 @@ export default async (req, res) => {
     response = data[0].evening;
   } else if (time === 'night') {
     const { data, error } = await supabase
-      .from('stock_screenshots_test')
+      .from('stock_screenshots_green')
       .select('night')
       .eq('symbol', symbol);
     if (error) {

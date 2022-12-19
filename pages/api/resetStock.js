@@ -12,7 +12,7 @@ export default async (req, res) => {
   const { term, isFirst } = req.query;
 
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .update({
       'morning': '',
       'afternoon': '',
@@ -23,7 +23,7 @@ export default async (req, res) => {
 
   if (isFirst === 'true') {
     await supabase
-      .from('status_test')
+      .from('status_green')
       .update({
         'morning': false,
         'afternoon': false,

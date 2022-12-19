@@ -11,7 +11,7 @@ const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 export default async (req, res) => {
   const { term } = req.query;
   const { data, error } = await supabase
-    .from('stock_screenshots_test')
+    .from('stock_screenshots_green')
     .insert([{
       symbol: term
     }]);
