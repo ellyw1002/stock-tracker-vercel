@@ -10,12 +10,12 @@ const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 // Our standard serverless handler function
 export default async (req, res) => {
   const { data, error } = await supabase
-    .from('stock_screenshots_green')
+    .from('stock_screenshots_test')
     .select('id, symbol')
     .order('created_at', { ascending: true });
 
   const status = await supabase
-    .from('status_green')
+    .from('status_test')
     .select();
 
   if (error) {

@@ -24,13 +24,13 @@ async function getBrowserInstance() {
 
 async function insertNightScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_green')
+    .from('stock_screenshots_test')
     .update({
       'night': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_green')
+    .from('status_test')
     .update({
       'night': true
     })
@@ -58,7 +58,7 @@ export default async (req, res) => {
 
     await page.setViewportSize({ width: 1280, height: 900 });
 
-    await page.goto(`https://www.google.com/search?q=${term}`);
+    await page.goto(`https://www.google.com/search?q=${term}+stock`);
     await timeout(1000);
     screenshotBuffer = (await page.screenshot()).toString('base64');
     console.log(`✅ ${new Date()} - (${term})`);

@@ -24,13 +24,13 @@ async function getBrowserInstance() {
 
 async function insertMorningScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_green')
+    .from('stock_screenshots_test')
     .update({
       'morning': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_green')
+    .from('status_test')
     .update({
       'morning': true
     })
@@ -44,13 +44,13 @@ async function insertMorningScreenshot(symbol, buffer) {
 
 async function insertAfternoonScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_green')
+    .from('stock_screenshots_test')
     .update({
       'afternoon': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_green')
+    .from('status_test')
     .update({
       'afternoon': true
     })
@@ -63,13 +63,13 @@ async function insertAfternoonScreenshot(symbol, buffer) {
 
 async function insertEveningScreenshot(symbol, buffer) {
   const { data, error } = await supabase
-    .from('stock_screenshots_green')
+    .from('stock_screenshots_test')
     .update({
       'evening': buffer
     })
     .match({ 'symbol': symbol });
   await supabase
-    .from('status_green')
+    .from('status_test')
     .update({
       'evening': true
     })
@@ -109,7 +109,6 @@ export default async (req, res) => {
     else if (time === 'afternoon') await insertAfternoonScreenshot(term, screenshotBuffer);
     else if (time === 'evening') await insertEveningScreenshot(term, screenshotBuffer);
     console.log('successfully inserted screenshot to database');
-
     return res.send(200);
 
   } catch (err) {
