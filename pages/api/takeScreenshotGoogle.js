@@ -65,7 +65,7 @@ export default async (req, res) => {
     await browser.close();
     console.log('end: ', new Date());
 
-    insertNightScreenshot(term, screenshotBuffer);
+    await insertNightScreenshot(term, screenshotBuffer);
     console.log('successfully inserted screenshot to database');
 
     return res.send(200);
