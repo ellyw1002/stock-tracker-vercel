@@ -19,7 +19,7 @@ import { useStockListQuery, useFetchStockScreenshotQuery } from '../services/sea
 import { useTakeScreenshotMutation, useRemoveStockMutation, useTakeScreenshotGoogleMutation } from '../services/stockListApi';
 
 export function TableComponent() {
-  let stockList, status, screenshotFailed;
+  let stockList = [], status, screenshotFailed;
   const [modalShow, setModalShow] = React.useState();
   const [screenshotShow, setScreenshotShow] = React.useState({});
   const [currentTime, setCurrentTime] = React.useState('morning')
@@ -38,7 +38,7 @@ export function TableComponent() {
     screenshotShow, { skip: screenshotShow === {} });
   const [removeStock, { isError: isRemoveError }] = useRemoveStockMutation();
 
-  if (!isStockListFetching) ({ stockList, status } = data);
+  if (!isStockListFetching && data) ({ stockList, status } = data);
   return (
     <>
       {stockListError && <Alert severity="error">Failed to get stock list</Alert>}
