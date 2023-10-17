@@ -9,6 +9,10 @@ const {
 const { createClient } = require('@supabase/supabase-js');
 const supabase = createClient(DATABASE_URL, SUPABASE_SERVICE_API_KEY);
 
+export const config = {
+  runtime: 'edge',
+};
+
 const timeout = (ms) => {
   return new Promise(resolve => setTimeout(resolve, ms));
 };
