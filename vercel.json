@@ -1,5 +1,8 @@
 {
   "functions": {
+    "pages/api/takeScreenshot.js": {
+      "maxDuration": 10
+    },
     "pages/api/takeScreenshotGoogle.js": {
       "maxDuration": 10
     },
