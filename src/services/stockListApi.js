@@ -18,7 +18,7 @@ export const stockListApi = api
       resetStock: build.mutation({
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
           const { stockList } = accessLevelRequests;
-          const isFirst = true;
+          let isFirst = true;
           for (const stock of stockList) {
             const response = await baseQuery({
               url: `resetStock?term=${stock.id}&isFirst=${isFirst}`,
@@ -42,7 +42,7 @@ export const stockListApi = api
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
           const { stockList, time } = accessLevelRequests;
           for (const stock of stockList) {
-            const retries = 3;
+            let retries = 3;
             let screenshotState = JSON.parse(window.localStorage.getItem(`${stock.id}`)) || {
               morning: false,
               afternoon: false,
@@ -72,7 +72,7 @@ export const stockListApi = api
         async queryFn(accessLevelRequests, _queryApi, _extraOptions, baseQuery) {
           const { stockList } = accessLevelRequests;
           for (const stock of stockList) {
-            const retries = 3;
+            let retries = 3;
             let screenshotState = JSON.parse(window.localStorage.getItem(`${stock.id}`)) || {
               night: false
             };
